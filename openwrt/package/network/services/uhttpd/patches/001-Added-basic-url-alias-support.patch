@@ -1,0 +1,160 @@
+Index: uhttpd-2015-11-08/file.c
+===================================================================
+--- uhttpd-2015-11-08.orig/file.c	2015-11-29 17:33:34.306711276 +0100
++++ uhttpd-2015-11-08/file.c	2015-11-29 18:53:58.470632772 +0100
+@@ -678,9 +678,11 @@
+ }
+ 
+ static void
+-uh_invoke_script(struct client *cl, struct dispatch_handler *d, struct path_info *pi)
++uh_invoke_script(struct client *cl, struct dispatch_handler *d, char *url, struct path_info *pi)
+ {
+-	char *url = blobmsg_data(blob_data(cl->hdr.head));
++	if(url == NULL) {
++		url = blobmsg_data(blob_data(cl->hdr.head));
++	}
+ 
+ 	n_requests++;
+ 	d->handle_request(cl, url, pi);
+@@ -702,7 +704,7 @@
+ 		cl = dr->cl;
+ 		dr->called = true;
+ 		cl->dispatch.data_blocked = false;
+-		uh_invoke_script(cl, dr->d, dr->path ? &dr->pi : NULL);
++		uh_invoke_script(cl, dr->d, NULL, dr->path ? &dr->pi : NULL);
+ 		client_poll_post_data(cl);
+ 	}
+ }
+@@ -778,7 +780,7 @@
+ 		return uh_defer_script(cl, d, pi);
+ 
+ 	cl->dispatch.req_free = uh_complete_request;
+-	uh_invoke_script(cl, d, pi);
++	uh_invoke_script(cl, d, url, pi);
+ }
+ 
+ static bool __handle_file_request(struct client *cl, char *url)
+@@ -860,13 +862,17 @@
+ {
+ 	struct http_request *req = &cl->request;
+ 	struct dispatch_handler *d;
+-	char *url = blobmsg_data(blob_data(cl->hdr.head));
++	char url[1024];
++	char *orig_url = blobmsg_data(blob_data(cl->hdr.head));
+ 	char *error_handler;
+ 
+-	url = uh_handle_alias(url);
++	/*Aliasing*/
++	uh_alias_transform(orig_url, url, 1024);
++
++	orig_url = uh_handle_alias(orig_url);
+ 
+-	uh_handler_run(cl, &url, false);
+-	if (!url)
++	uh_handler_run(cl, &orig_url, false);
++	if (!orig_url)
+ 		return;
+ 
+ 	req->redirect_status = 200;
+@@ -877,8 +883,8 @@
+ 	if (__handle_file_request(cl, url))
+ 		return;
+ 
+-	if (uh_handler_run(cl, &url, true) &&
+-	    (!url || __handle_file_request(cl, url)))
++	if (uh_handler_run(cl, &orig_url, true) &&
++	    (!orig_url || __handle_file_request(cl, orig_url)))
+ 		return;
+ 
+ 	req->redirect_status = 404;
+Index: uhttpd-2015-11-08/main.c
+===================================================================
+--- uhttpd-2015-11-08.orig/main.c	2015-11-29 17:33:34.306711276 +0100
++++ uhttpd-2015-11-08/main.c	2015-11-29 17:33:39.934739145 +0100
+@@ -72,6 +72,14 @@
+ 				continue;
+ 
+ 			uh_auth_add(line, col1, col2);
++		} else if (!strncmp(line, "A:", 2)) {
++			if(!(col1 = strchr(line, ':')) || (*col1++ = 0) ||
++				!(col2=strchr(col1, ':')) || (*col2++ = 0) ||
++				!(eol = strchr(col2, '\n')) || (*eol++ = 0))
++				continue;
++
++			uh_alias_add(strdup(col1),strdup(col2));
++
+ 		} else if (!strncmp(line, "I:", 2)) {
+ 			if (!(col1 = strchr(line, ':')) || (*col1++ = 0) ||
+ 				!(eol = strchr(col1, '\n')) || (*eol++  = 0))
+Index: uhttpd-2015-11-08/uhttpd.h
+===================================================================
+--- uhttpd-2015-11-08.orig/uhttpd.h	2015-11-29 17:33:34.306711276 +0100
++++ uhttpd-2015-11-08/uhttpd.h	2015-11-29 17:33:39.934739145 +0100
+@@ -297,6 +297,9 @@
+ void uh_client_read_cb(struct client *cl);
+ void uh_client_notify_state(struct client *cl);
+ 
++void uh_alias_add(const char *from, const char *to);
++bool uh_alias_transform(const char *url, char *dest, int test_l);
++
+ void uh_auth_add(const char *path, const char *user, const char *pass);
+ bool uh_auth_check(struct client *cl, struct path_info *pi);
+ 
+Index: uhttpd-2015-11-08/CMakeLists.txt
+===================================================================
+--- uhttpd-2015-11-08.orig/CMakeLists.txt	2015-11-29 17:33:34.306711276 +0100
++++ uhttpd-2015-11-08/CMakeLists.txt	2015-11-29 17:33:39.934739145 +0100
+@@ -21,7 +21,7 @@
+ 	SET(LIBS "")
+ ENDIF()
+ 
+-SET(SOURCES main.c listen.c client.c utils.c file.c auth.c cgi.c relay.c proc.c plugin.c handler.c)
++SET(SOURCES main.c listen.c client.c utils.c file.c alias.c auth.c cgi.c relay.c proc.c plugin.c handler.c)
+ IF(TLS_SUPPORT)
+ 	SET(SOURCES ${SOURCES} tls.c)
+ 	ADD_DEFINITIONS(-DHAVE_TLS)
+Index: uhttpd-2015-11-08/alias.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ uhttpd-2015-11-08/alias.c	2015-11-29 17:33:39.934739145 +0100
+@@ -0,0 +1,40 @@
++
++#include <libubox/blobmsg.h>
++#include "uhttpd.h"
++
++static LIST_HEAD(aliases);
++
++struct url_alias {
++	struct list_head list;
++	const char *from;
++	int from_l;
++	const char *to;
++	int to_l;
++};
++
++void uh_alias_add(const char *from, const char *to) {
++	struct url_alias *alias = malloc(sizeof(struct url_alias));
++	alias->from = strdup(from);
++	alias->from_l = strlen(from);
++	alias->to = strdup(to);
++	alias->to_l = strlen(to);
++
++	list_add_tail(&alias->list, &aliases);
++}
++
++bool uh_alias_transform(const char *url, char *dest, int dest_l) {
++	struct url_alias *alias;
++
++	list_for_each_entry(alias, &aliases, list) {
++		if(strncmp(url, alias->from, alias->from_l) == 0) {
++		   snprintf(dest, dest_l, alias->to, url + alias->from_l);
++		   dest[dest_l-1] = 0;
++		   return true;
++		}
++	}
++
++	//The URL doesn't match any alias, copy as is
++	strncpy(dest, url, dest_l);
++	dest[dest_l-1] = 0;
++	return false;
++}

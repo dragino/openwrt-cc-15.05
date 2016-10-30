@@ -1,0 +1,123 @@
+Index: uhttpd-2015-11-08/CMakeLists.txt
+===================================================================
+--- uhttpd-2015-11-08.orig/CMakeLists.txt	2015-11-29 16:23:12.057774498 +0100
++++ uhttpd-2015-11-08/CMakeLists.txt	2015-11-29 16:23:12.069774273 +0100
+@@ -21,7 +21,7 @@
+ 	SET(LIBS "")
+ ENDIF()
+ 
+-SET(SOURCES main.c listen.c client.c utils.c file.c alias.c auth.c cgi.c relay.c proc.c plugin.c handler.c)
++SET(SOURCES main.c listen.c client.c utils.c file.c captive.c alias.c auth.c cgi.c relay.c proc.c plugin.c handler.c)
+ IF(TLS_SUPPORT)
+ 	SET(SOURCES ${SOURCES} tls.c)
+ 	ADD_DEFINITIONS(-DHAVE_TLS)
+Index: uhttpd-2015-11-08/captive.c
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ uhttpd-2015-11-08/captive.c	2015-11-29 16:23:12.069774273 +0100
+@@ -0,0 +1,33 @@
++
++#include <libubox/blobmsg.h>
++#include "uhttpd.h"
++
++static char *captive_host = NULL;
++static char *captive_url = NULL;
++
++void uh_captive_set_host(const char *host, const char *url) {
++	captive_host = strdup(host);
++	captive_url = strdup(url);
++}
++
++bool uh_captive_check_host(const char *host) {
++	/* Captive host support configured? */
++	if (captive_host==NULL || captive_url==NULL)
++		return false;
++
++	/* Is request sent to the captive host? */
++	if (host!=NULL && !strcmp(host, captive_host))
++		/* yes: proceed normally */
++		return false;
++
++	/* no: must redirect to the correct URL */
++	return true;
++}
++
++bool uh_captive_redirect(struct client *cl) {
++	uh_http_header(cl, 302, "Found");
++	ustream_printf(cl->us, "Content-Length: 0\r\n");
++	ustream_printf(cl->us, "Location: %s\r\n\r\n", captive_url);
++	uh_request_done(cl);
++	return true;
++}
+Index: uhttpd-2015-11-08/client.c
+===================================================================
+--- uhttpd-2015-11-08.orig/client.c	2015-11-29 16:23:05.537741937 +0100
++++ uhttpd-2015-11-08/client.c	2015-11-29 16:23:12.069774273 +0100
+@@ -374,6 +374,8 @@
+ 			r->ua = UH_UA_GECKO;
+ 		else if (strstr(val, "Konqueror"))
+ 			r->ua = UH_UA_KONQUEROR;
++	} else if (!strcmp(data, "host")) {
++		r->captive_redirect = uh_captive_check_host(val);
+ 	}
+ 
+ 
+Index: uhttpd-2015-11-08/file.c
+===================================================================
+--- uhttpd-2015-11-08.orig/file.c	2015-11-29 16:23:12.057774498 +0100
++++ uhttpd-2015-11-08/file.c	2015-11-29 16:23:12.069774273 +0100
+@@ -866,6 +866,12 @@
+ 	char *orig_url = blobmsg_data(blob_data(cl->hdr-head));
+ 	char *error_handler;
+ 
++	/* Captive portal */
++	if (req->captive_redirect) {
++		uh_captive_redirect(cl);
++		return;
++	}
++
+ 	/*Aliasing*/
+ 	uh_alias_transform(orig_url, url, 1024);
+ 
+Index: uhttpd-2015-11-08/uhttpd.h
+===================================================================
+--- uhttpd-2015-11-08.orig/uhttpd.h	2015-11-29 16:23:12.057774498 +0100
++++ uhttpd-2015-11-08/uhttpd.h	2015-11-29 16:23:12.069774273 +0100
+@@ -123,6 +123,7 @@
+ 	bool disable_chunked;
+ 	uint8_t transfer_chunked;
+ 	const struct auth_realm *realm;
++	bool captive_redirect;
+ };
+ 
+ enum client_state {
+@@ -297,6 +298,10 @@
+ void uh_client_read_cb(struct client *cl);
+ void uh_client_notify_state(struct client *cl);
+ 
++void uh_captive_set_host(const char *host, const char *url);
++bool uh_captive_check_host(const char *host);
++bool uh_captive_redirect(struct client *cl);
++
+ void uh_alias_add(const char *from, const char *to);
+ bool uh_alias_transform(const char *url, char *dest, int test_l);
+ 
+Index: uhttpd-2015-11-08/main.c
+===================================================================
+--- uhttpd-2015-11-08.orig/main.c	2015-11-29 16:23:12.057774498 +0100
++++ uhttpd-2015-11-08/main.c	2015-11-29 16:24:34.110181747 +0100
+@@ -79,7 +79,13 @@
+ 				continue;
+ 
+ 			uh_alias_add(strdup(col1),strdup(col2));
+-
++		} else if (!strncmp(line, "C:", 2)) {
++			if (!(col1 = strchr(line, ':')) || (*col1++ = 0) ||
++				!(col2 = strchr(col1, ':')) || (*col2++ = 0) ||
++				!(eol = strchr(col2, '\n')) || (*eol++  = 0))
++				continue;
++ 
++			uh_captive_set_host(strdup(col1), strdup(col2));
+ 		} else if (!strncmp(line, "I:", 2)) {
+ 			if (!(col1 = strchr(line, ':')) || (*col1++ = 0) ||
+ 				!(eol = strchr(col1, '\n')) || (*eol++  = 0))
