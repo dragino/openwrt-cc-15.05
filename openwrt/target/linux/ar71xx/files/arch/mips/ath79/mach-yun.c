@@ -135,7 +135,7 @@ static void __init ds_setup(void)
 
 	ath79_gpio_function2_setup(AR933X_GPIO_FUNC2_JUMPSTART_DISABLE, 0);
 
-	printk("Setting DogStick2 GPIO\n");
+	printk("Setting Dragino Yun GPIO\n");
 #ifdef DS2_PREV_RESET_PIN
 	t = ath79_reset_rr(AR933X_RESET_REG_BOOTSTRAP);
 	t |= AR933X_BOOTSTRAP_MDIO_GPIO_EN;

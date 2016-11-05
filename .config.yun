@@ -416,12 +416,12 @@ CONFIG_TARGET_INIT_SUPPRESS_STDERR=y
 CONFIG_VERSIONOPT=y
 CONFIG_VERSION_DIST="OpenWrtYun"
 CONFIG_VERSION_NICK="ChaosCalmer"
-CONFIG_VERSION_NUMBER="1.0"
-CONFIG_VERSION_REPO="http://rsdev.16mb.com/download/OpenWrt/ChaosCalmer_15.05/ArduinoYun/%V/packages"
-CONFIG_VERSION_MANUFACTURER="Arduino"
-CONFIG_VERSION_PRODUCT="Arduino Yun"
-CONFIG_VERSION_HWREV="1.0"
-CONFIG_VERSION_FILENAMES=y
+CONFIG_VERSION_NUMBER="4.0"
+CONFIG_VERSION_REPO=""
+CONFIG_VERSION_MANUFACTURER="Dragino"
+CONFIG_VERSION_PRODUCT="Dragino Yun"
+CONFIG_VERSION_HWREV="HE"
+# CONFIG_VERSION_FILENAMES is not set
 CONFIG_PER_FEED_REPO=y
 CONFIG_PER_FEED_REPO_ADD_DISABLED=y
 CONFIG_PER_FEED_REPO_ADD_COMMENTED=y
@@ -3365,7 +3365,6 @@ CONFIG_PACKAGE_luci-app-mwan3=m
 # CONFIG_PACKAGE_luci-app-olsr is not set
 # CONFIG_PACKAGE_luci-app-olsr-services is not set
 # CONFIG_PACKAGE_luci-app-olsr-viz is not set
-# CONFIG_PACKAGE_luci-app-p2pblock is not set
 # CONFIG_PACKAGE_luci-app-p910nd is not set
 # CONFIG_PACKAGE_luci-app-pbx is not set
 # CONFIG_PACKAGE_luci-app-pbx-voicemail is not set
@@ -3375,7 +3374,6 @@ CONFIG_PACKAGE_luci-app-mwan3=m
 # CONFIG_PACKAGE_luci-app-samba is not set
 CONFIG_PACKAGE_luci-app-sensor=y
 # CONFIG_PACKAGE_luci-app-siitwizard is not set
-# CONFIG_PACKAGE_luci-app-splash is not set
 # CONFIG_PACKAGE_luci-app-sqm is not set
 # CONFIG_PACKAGE_luci-app-statistics is not set
 # CONFIG_PACKAGE_luci-app-tinyproxy is not set
@@ -3459,7 +3457,6 @@ CONFIG_PACKAGE_freifunk-mapupdate=m
 CONFIG_PACKAGE_freifunk-p2pblock=m
 CONFIG_PACKAGE_freifunk-policyrouting=m
 CONFIG_PACKAGE_freifunk-watchdog=m
-# CONFIG_PACKAGE_luci-mod-freifunk-community is not set
 CONFIG_PACKAGE_meshwizard=m
 CONFIG_PACKAGE_remote-update=m
 

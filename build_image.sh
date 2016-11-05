@@ -11,7 +11,7 @@ IMAGE_SUFFIX=
 
 REPO_PATH=$(pwd)
 VERSION=4.0.0
-OPENWRT_PATH="openwrt-yun"
+OPENWRT_PATH="openwrt"
 
 while getopts 'a:b:p:v:sh' OPTION
 do
@@ -53,7 +53,7 @@ BUILD=$APP-$VERSION
 BUILD_TIME="`date`"
 
 ARCH="ar71xx"
-file_prefix="openwrt-1.0-ar71xx-generic-yun"
+file_prefix="openwrt-ar71xx-generic-yun"
 if [ $APP = "duo" ];then
 	echo "Arch is ramips"
 	ARCH="ramips"
@@ -167,5 +167,5 @@ rm -rf custom_config
 cd $REPO_PATH
 
 echo ""
-echo "End Dragino2 build, The image can be found at $IMAGE_DIR"
+echo "End Dragino build, The image can be found at $IMAGE_DIR"
 echo ""

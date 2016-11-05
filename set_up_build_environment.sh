@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #Set up build environment for Dragino v2. Only need to run once on first compile. 
 
-OPENWRT_PATH=openwrt-yun
+OPENWRT_PATH=openwrt
 
 while getopts 'p:v:sh' OPTION
 do
@@ -23,10 +23,6 @@ REPO_PATH=$(pwd)
 
 
 sudo apt-get install npm
-
-echo "*** Copy feeds used in Dragino"
-sleep 2
-#cp feeds.dragino $OPENWRT_PATH/feeds.conf.default
 
 echo " "
 echo "*** Update the feeds (See ./feeds-update.log)"
@@ -50,11 +46,12 @@ sleep 10
 $OPENWRT_PATH/scripts/feeds install -a
 echo " "
 
-echo ""
-echo "Patch Dragino2 Platform"
-rsync -avC platform/target/ $OPENWRT_PATH/target/
 
-
+echo " "
+echo "*** Install OpenWrt CC 15.05 patches"
+cp cc_1505_patch/903-ar933x_uart_baud_max_step_fix.patch $OPENWRT_PATH/target/linux/ar71xx/patches-3.18/
+#cp bb_1407_patch/730-MIPS-ath79-add-dragino-siod-support.patch $OPENWRT_PATH/target/linux/ar71xx/patches-3.18/
+echo " "
 
 #Remove tmp directory
 #rm -rf $OPENWRT_PATH/tmp/
