@@ -22,7 +22,7 @@ start() {
 	fi
 
 	ifconfig eth0:9 172.31.255.254 netmask 255.255.255.252	
-	#load_uart
+	load_uart
 }
 
 restart() {
