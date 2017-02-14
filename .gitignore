@@ -9,3 +9,7 @@
 /openwrt/logs
 /openwrt/feeds
 /openwrt/feeds.conf
+/openwrt/files
+/openwrt/.config.orig
+/openwrt/defconfig.log
+/openwrt/key-build*

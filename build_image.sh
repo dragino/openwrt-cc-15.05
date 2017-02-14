@@ -10,7 +10,7 @@ APP2=
 IMAGE_SUFFIX=
 
 REPO_PATH=$(pwd)
-VERSION=4.0.0
+VERSION=4.1.0
 OPENWRT_PATH="openwrt"
 
 while getopts 'a:b:p:v:sh' OPTION
@@ -65,6 +65,13 @@ echo "Remove custom files from last build"
 rm -rf $OPENWRT_PATH/files
 
 mkdir $OPENWRT_PATH/files
+
+if [ $APP = "IoT" ];then
+	echo ""
+	echo "***Copy General Files***"
+	cp -r general_files/* $OPENWRT_PATH/files/
+	file_prefix="openwrt-ar71xx-generic-dragino2"
+fi
 
 if [ -d files-$APP ];then
 	echo "***Copy files-$APP to default files directory***"
