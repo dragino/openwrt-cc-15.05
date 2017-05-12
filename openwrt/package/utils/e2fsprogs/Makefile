@@ -8,9 +8,9 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=e2fsprogs
-PKG_VERSION:=1.42.12
-PKG_MD5SUM:=68255f51be017a93f2f6402fab06c2bf
-PKG_RELEASE:=1
+PKG_VERSION:=1.43.1
+PKG_MD5SUM:=1775f3f0eed9dee1c5f39e08d1964a97
+PKG_RELEASE:=2
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=@SF/e2fsprogs
@@ -93,6 +93,18 @@ $(call Package/e2fsprogs)
   DEPENDS:= +e2fsprogs
 endef
 
+define Package/chattr
+$(call Package/e2fsprogs)
+  TITLE:=Ext2 Filesystem chattr utility
+  DEPENDS:= +e2fsprogs
+endef
+
+define Package/lsattr
+$(call Package/e2fsprogs)
+  TITLE:=Ext2 Filesystem lsattr utility
+  DEPENDS:= +e2fsprogs
+endef
+
 TARGET_CFLAGS += $(FPIC) -ffunction-sections -fdata-sections
 
 CONFIGURE_VARS += \
@@ -115,14 +127,14 @@ endef
 
 define Build/Compile
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR)/util \
-		BUILDCC="$(HOSTCC)" \
+		BUILD_CC="$(HOSTCC)" \
 		CFLAGS="" \
 		CPPFLAGS="" \
 		LDFLAGS="" \
 		subst
 	+$(MAKE) $(PKG_JOBS) -C $(PKG_BUILD_DIR) \
 		LDFLAGS=-Wl,--gc-sections \
-		BUILDCC="$(HOSTCC)" \
+		BUILD_CC="$(HOSTCC)" \
 		DESTDIR="$(PKG_INSTALL_DIR)" \
 		LIBBLKID="$(PKG_BUILD_DIR)/lib/libblkid.a -luuid" \
 		all
@@ -219,6 +231,16 @@ define Package/debugfs/install
 	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libss.so.* $(1)/usr/lib/
 endef
 
+define Package/chattr/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/chattr $(1)/usr/bin/
+endef
+
+define Package/lsattr/install
+	$(INSTALL_DIR) $(1)/usr/bin
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/usr/bin/lsattr $(1)/usr/bin/
+endef
+
 $(eval $(call BuildPackage,e2fsprogs))
 $(eval $(call BuildPackage,libext2fs))
 $(eval $(call BuildPackage,tune2fs))
@@ -228,3 +250,5 @@ $(eval $(call BuildPackage,dumpe2fs))
 $(eval $(call BuildPackage,e2freefrag))
 $(eval $(call BuildPackage,filefrag))
 $(eval $(call BuildPackage,debugfs))
+$(eval $(call BuildPackage,chattr))
+$(eval $(call BuildPackage,lsattr))

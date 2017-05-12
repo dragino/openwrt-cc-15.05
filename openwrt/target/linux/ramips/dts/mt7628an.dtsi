@@ -13,26 +13,31 @@
 		bootargs = "console=ttyS0,57600";
 	};
 
-	cpuintc: cpuintc@0 {
-		compatible = "mti,cpu-interrupt-controller";
-		interrupt-controller;
-		#interrupt-cells = <1>;
+	aliases {
+		serial0 = &uartlite;
 	};
 
-	palmbus@10000000 {
+	cpuintc: cpuintc@0 {
+		#address-cells = <0>;
+		#interrupt-cells = <1>;
+		interrupt-controller;
+		compatible = "mti,cpu-interrupt-controller";
+	};
+
+	palmbus: palmbus@10000000 {
 		compatible = "palmbus";
 		reg = <0x10000000 0x200000>;
-                ranges = <0x0 0x10000000 0x1FFFFF>;
+		ranges = <0x0 0x10000000 0x1FFFFF>;
 
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		sysc@0 {
+		sysc: sysc@0 {
 			compatible = "ralink,mt7620a-sysc";
 			reg = <0x0 0x100>;
 		};
 
-		watchdog@120 {
+		watchdog: watchdog@120 {
 			compatible = "ralink,mt7628an-wdt", "mtk,mt7621-wdt";
 			reg = <0x120 0x10>;
 
@@ -61,7 +66,7 @@
 						 0x80 0x78>;
 		};
 
-		memc@300 {
+		memc: memc@300 {
 			compatible = "ralink,mt7620a-memc", "ralink,rt3050-memc";
 			reg = <0x300 0x100>;
 
@@ -104,8 +109,8 @@
 			};
 		};
 
-		i2c@900 {
-			compatible = "mediatek,mt7628-i2c";
+		i2c: i2c@900 {
+			compatible = "mediatek,mt7621-i2c";
 			reg = <0x900 0x100>;
 
 			resets = <&rstctrl 16>;
@@ -120,8 +125,8 @@
 			pinctrl-0 = <&i2c_pins>;
 		};
 
-		i2s@a00 {
-			compatible = "ralink,mt7620a-i2s";
+		i2s: i2s@a00 {
+			compatible = "mediatek,mt7628-i2s";
 			reg = <0xa00 0x100>;
 
 			resets = <&rstctrl 17>;
@@ -130,14 +135,17 @@
 			interrupt-parent = <&intc>;
 			interrupts = <10>;
 
-			dmas = <&gdma 2>,
-				<&gdma 3>;
+			txdma-req = <2>;
+			rxdma-req = <3>;
+
+			dmas = <&gdma 4>,
+				<&gdma 6>;
 			dma-names = "tx", "rx";
 
 			status = "disabled";
 		};
 
-		spi@b00 {
+		spi0: spi@b00 {
 			compatible = "ralink,mt7621-spi";
 			reg = <0xb00 0x100>;
 
@@ -145,7 +153,7 @@
 			reset-names = "spi";
 
 			#address-cells = <1>;
-			#size-cells = <1>;
+			#size-cells = <0>;
 
 			pinctrl-names = "default";
 			pinctrl-0 = <&spi_pins>;
@@ -153,13 +161,15 @@
 			status = "disabled";
 		};
 
-		uartlite@c00 {
+		uartlite: uartlite@c00 {
 			compatible = "ns16550a";
 			reg = <0xc00 0x100>;
 
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			no-loopback-test;
+
+			clock-frequency = <40000000>;
 
 			resets = <&rstctrl 12>;
 			reset-names = "uartl";
@@ -171,13 +181,15 @@
 			pinctrl-0 = <&uart0_pins>;
 		};
 
-		uart1@d00 {
+		uart1: uart1@d00 {
 			compatible = "ns16550a";
 			reg = <0xd00 0x100>;
 
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			no-loopback-test;
+
+			clock-frequency = <40000000>;
 
 			resets = <&rstctrl 19>;
 			reset-names = "uart1";
@@ -191,13 +203,15 @@
 			status = "disabled";
 		};
 
-		uart2@e00 {
+		uart2: uart2@e00 {
 			compatible = "ns16550a";
 			reg = <0xe00 0x100>;
 
 			reg-shift = <2>;
 			reg-io-width = <4>;
 			no-loopback-test;
+
+			clock-frequency = <40000000>;
 
 			resets = <&rstctrl 20>;
 			reset-names = "uart2";
@@ -211,7 +225,7 @@
 			status = "disabled";
 		};
 
-		pwm@5000 {
+		pwm: pwm@5000 {
 			compatible = "mediatek,mt7628-pwm";
 			reg = <0x5000 0x1000>;
 
@@ -224,7 +238,7 @@
 			status = "disabled";
 		};
 
-		pcm@2000 {
+		pcm: pcm@2000 {
 			compatible = "ralink,mt7620a-pcm";
 			reg = <0x2000 0x800>;
 
@@ -238,7 +252,7 @@
 		};
 
 		gdma: gdma@2800 {
-			compatible = "ralink,mt7620a-gdma", "ralink,rt2880-gdma";
+			compatible = "ralink,rt3883-gdma";
 			reg = <0x2800 0x800>;
 
 			resets = <&rstctrl 14>;
@@ -255,12 +269,14 @@
 		};
 	};
 
-	pinctrl {
+	pinctrl: pinctrl {
 		compatible = "ralink,rt2880-pinmux";
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
+
 		state_default: pinctrl0 {
 		};
+
 		spi_pins: spi {
 			spi {
 				ralink,group = "spi";
@@ -337,18 +353,25 @@
 		#reset-cells = <1>;
 	};
 
+	clkctrl: clkctrl {
+		compatible = "ralink,rt2880-clock";
+		#clock-cells = <1>;
+	};
+
 	usbphy: usbphy@10120000 {
-		compatible = "ralink,mt7628an-usbphy", "ralink,mt7620a-usbphy";
-		reg = <0x10120000 1000>;
+		compatible = "ralink,mt7628an-usbphy", "mediatek,mt7620-usbphy";
+		reg = <0x10120000 0x4000>;
 		#phy-cells = <1>;
 
 		resets = <&rstctrl 22 &rstctrl 25>;
 		reset-names = "host", "device";
+		clocks = <&clkctrl 22 &clkctrl 25>;
+		clock-names = "host", "device";
 	};
 
-	sdhci@10130000 {
+	sdhci: sdhci@10130000 {
 		compatible = "ralink,mt7620-sdhci";
-		reg = <0x10130000 4000>;
+		reg = <0x10130000 0x4000>;
 
 		interrupt-parent = <&intc>;
 		interrupts = <14>;
@@ -359,8 +382,8 @@
 		status = "disabled";
 	};
 
-	ehci@101c0000 {
-		compatible = "ralink,rt3xxx-ehci";
+	ehci: ehci@101c0000 {
+		compatible = "generic-ehci";
 		reg = <0x101c0000 0x1000>;
 
 		phys = <&usbphy 1>;
@@ -370,8 +393,8 @@
 		interrupts = <18>;
 	};
 
-	ohci@101c1000 {
-		compatible = "ralink,rt3xxx-ohci";
+	ohci: ohci@101c1000 {
+		compatible = "generic-ohci";
 		reg = <0x101c1000 0x1000>;
 
 		phys = <&usbphy 1>;
@@ -381,20 +404,22 @@
 		interrupts = <18>;
 	};
 
-	ethernet@10100000 {
+	ethernet: ethernet@10100000 {
 		compatible = "ralink,rt5350-eth";
-		reg = <0x10100000 10000>;
+		reg = <0x10100000 0x10000>;
 
 		interrupt-parent = <&cpuintc>;
 		interrupts = <5>;
 
 		resets = <&rstctrl 21 &rstctrl 23>;
 		reset-names = "fe", "esw";
+
+		mediatek,switch = <&esw>;
 	};
 
-	esw@10110000 {
-		compatible = "ralink,rt3050-esw";
-		reg = <0x10110000 8000>;
+	esw: esw@10110000 {
+		compatible = "mediatek,mt7628-esw", "ralink,rt3050-esw";
+		reg = <0x10110000 0x8000>;
 
 		resets = <&rstctrl 23>;
 		reset-names = "esw";
@@ -403,7 +428,7 @@
 		interrupts = <17>;
 	};
 
-	pcie@10140000 {
+	pcie: pcie@10140000 {
 		compatible = "mediatek,mt7620-pci";
 		reg = <0x10140000 0x100
 			0x10142000 0x100>;
@@ -411,11 +436,13 @@
 		#address-cells = <3>;
 		#size-cells = <2>;
 
-		resets = <&rstctrl 26>;
-		reset-names = "pcie0";
-
 		interrupt-parent = <&cpuintc>;
 		interrupts = <4>;
+
+		resets = <&rstctrl 26 &rstctrl 27>;
+		reset-names = "pcie0", "pcie1";
+		clocks = <&clkctrl 26 &clkctrl 27>;
+		clock-names = "pcie0", "pcie1";
 
 		status = "disabled";
 
@@ -437,4 +464,16 @@
 		};
 	};
 
+	wmac: wmac@10300000 {
+		compatible = "mediatek,mt7628-wmac";
+		reg = <0x10300000 0x100000>;
+
+		interrupt-parent = <&cpuintc>;
+		interrupts = <6>;
+
+		status = "disabled";
+
+		mediatek,mtd-eeprom = <&factory 0x0000>;
+		mediatek,5ghz = <0>;
+	};
 };

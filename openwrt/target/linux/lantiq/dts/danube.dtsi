@@ -54,7 +54,7 @@
 			compatible = "lantiq,eiu-xway";
 			reg = <0x101000 0x1000>;
 			interrupt-parent = <&icu0>;
-			interrupts = <166 135 66>;
+			lantiq,eiu-irqs = <166 135 66>;
 		};
 
 		pmu0: pmu@102000 {
@@ -70,7 +70,7 @@
 
 		vmmc@107000 {
 			status = "disabled";
-			compatible = "lantiq,vmmc";
+			compatible = "lantiq,vmmc-xway";
 			reg = <0x103000 0x400>;
 			interrupt-parent = <&icu0>;
 			interrupts = <150 151 152 153 154 155>;
@@ -123,7 +123,7 @@
 		};
 
 		gpio: pinmux@E100B10 {
-			compatible = "lantiq,pinctrl-xway";
+			compatible = "lantiq,danube-pinctrl";
 			#gpio-cells = <2>;
 			gpio-controller;
 			reg = <0xE100B10 0xA0>;

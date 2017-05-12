@@ -11,15 +11,15 @@ PKG_NAME:=samba
 PKG_VERSION:=3.6.25
 PKG_RELEASE:=5
 
-PKG_SOURCE_URL:=http://ftp.samba.org/pub/samba \
-	http://ftp.samba.org/pub/samba/stable
+PKG_SOURCE_URL:=https://download.samba.org/pub/samba \
+	https://download.samba.org/pub/samba/stable
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_MD5SUM:=76da2fa64edd94a0188531e7ecb27c4e
 
 PKG_LICENSE:=GPL-3.0
 PKG_LICENSE_FILES:=COPYING
 
-PKG_MAINTAINER:=Felix Fietkau <nbd@openwrt.org>
+PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 
 PKG_BUILD_PARALLEL:=1
 
@@ -34,7 +34,7 @@ define Package/samba36-server
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Samba 3.6 SMB/CIFS server
-  URL:=http://www.samba.org/
+  URL:=https://www.samba.org/
   DEPENDS:=+USE_GLIBC:librt $(ICONV_DEPENDS)
 endef
 
@@ -42,7 +42,7 @@ define Package/samba36-client
   SECTION:=net
   CATEGORY:=Network
   TITLE:=Samba 3.6 SMB/CIFS client
-  URL:=http://www.samba.org/
+  URL:=https://www.samba.org/
   DEPENDS:=+libreadline +libncurses
 endef
 
@@ -129,6 +129,7 @@ MAKE_FLAGS += DYNEXP= PICFLAG= MODULES=
 define Package/samba36-server/conffiles
 /etc/config/samba
 /etc/samba/smb.conf.template
+/etc/samba/smbpasswd
 endef
 
 define Package/samba36-server/install

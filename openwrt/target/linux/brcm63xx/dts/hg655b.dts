@@ -1,10 +1,16 @@
 /dts-v1/;
 
-/include/ "bcm6368.dtsi"
+#include "bcm6368.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "Huawei HG655b";
 	compatible = "huawei,hg655b", "brcm,bcm6368";
+
+	chosen {
+		bootargs = "root=/dev/mtdblock2 rootfstype=squashfs,jffs2 noinitrd console=ttyS0,115200";
+	};
 
 	gpio-keys-polled {
 		compatible = "gpio-keys-polled";
@@ -16,17 +22,17 @@
 		wps {
 			label = "wps";
 			gpios = <&gpio0 12 1>;
-			linux,code = <0x211>;
+			linux,code = <KEY_WPS_BUTTON>;
 		};
 		wlan {
 			label = "wlan";
 			gpios = <&gpio0 23 1>;
-			linux,code = <0xee>;
+			linux,code = <KEY_WLAN>;
 		};
 		reset {
 			label = "reset";
 			gpios = <&gpio1 2 1>;
-			linux,code = <0x198>;
+			linux,code = <KEY_RESTART>;
 		};
 	};
 

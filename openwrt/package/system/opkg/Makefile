@@ -1,5 +1,6 @@
 #
 # Copyright (C) 2006-2015 OpenWrt.org
+# Copyright (C) 2016 LEDE Project
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -12,13 +13,14 @@ include $(INCLUDE_DIR)/feeds.mk
 PKG_NAME:=opkg
 PKG_REV:=9c97d5ecd795709c8584e972bfdf3aee3a5b846d
 PKG_VERSION:=$(PKG_REV)
-PKG_RELEASE:=9
+PKG_RELEASE:=15
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_VERSION:=$(PKG_REV)
 PKG_SOURCE_SUBDIR:=opkg-$(PKG_VERSION)
 PKG_SOURCE_URL:=http://git.yoctoproject.org/git/opkg
-PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.gz
+PKG_SOURCE:=$(PKG_SOURCE_SUBDIR).tar.xz
+PKG_MIRROR_MD5SUM:=abba824695a7dd4acf2a6371c4e22142656b3d1f0fa93c04410116d2170ce1a9
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
 PKG_FIXUP:=autoreconf
 PKG_REMOVE_FILES = autogen.sh aclocal.m4
@@ -26,6 +28,9 @@ PKG_REMOVE_FILES = autogen.sh aclocal.m4
 PKG_LICENSE:=GPL-2.0
 PKG_LICENSE_FILES:=COPYING
 
+PKG_MAINTAINER:=Jo-Philipp Wich <jo@mein.io>
+
+PKG_FLAGS := nonshared
 PKG_CONFIG_DEPENDS := CONFIG_SIGNED_PACKAGES
 
 PKG_BUILD_PARALLEL:=1
@@ -39,8 +44,9 @@ define Package/opkg/Default
   SECTION:=base
   CATEGORY:=Base system
   TITLE:=opkg package manager
-  MAINTAINER:=Jo-Philipp Wich <xm@subsignal.org>
+  DEPENDS:=+uclient-fetch
   URL:=http://wiki.openmoko.org/wiki/Opkg
+  MENU:=1
 endef
 
 define Package/opkg/Default/description
@@ -51,6 +57,16 @@ define Package/opkg/Default/description
   necessary to install a particular package.
 
   opkg knows how to install both .ipk and .deb packages.
+endef
+
+define Package/opkg/config
+config OPKG_SUPPORT_MD5
+  bool
+  default n
+  depends on PACKAGE_opkg
+  prompt "Support reading old md5 hashes."
+  help
+	Old opkg used md5s, new uses sha. This options enables understanding both while prefering sha.
 endef
 
 define Package/opkg
@@ -72,7 +88,7 @@ endef
 define Package/opkg-smime
   $(call Package/opkg/Default)
   TITLE+= (with S/MIME signature support)
-  DEPENDS+=+libopenssl
+  DEPENDS+=+PACKAGE_opkg-smime:libopenssl
   VARIANT:=smime
 endef
 
@@ -82,9 +98,18 @@ define Package/opkg-smime/description
   This package allows the Package index to be verified with S/MIME.
 endef
 
+define Package/opkg-smime/config
+config OPKG_SMIME_SUPPORT_MD5
+  bool
+  default n
+  depends on PACKAGE_opkg-smime
+  prompt "Support reading old md5 hashes."
+  help
+	Old opkg used md5s, new uses sha. This options enables understanding both while prefering sha.
+endef
+
 Package/opkg-smime/conffiles = $(Package/opkg/conffiles)
 
-TARGET_CFLAGS += $(if $(CONFIG_GCC_VERSION_4_3)$(CONFIG_GCC_VERSION_4_4),-Wno-array-bounds)
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
 EXTRA_CFLAGS += $(TARGET_CPPFLAGS)
 
@@ -96,10 +121,20 @@ CONFIGURE_ARGS += \
 	--with-opkglockfile=/var/lock/opkg.lock
 
 ifeq ($(BUILD_VARIANT),smime)
-	CONFIGURE_ARGS += --enable-openssl --disable-usign
+  CONFIGURE_ARGS += --enable-openssl --disable-usign
+  ifeq ($(CONFIG_OPKG_SMIME_SUPPORT_MD5),y)
+    CONFIGURE_ARGS += --enable-md5
+  else
+    CONFIGURE_ARGS += --disable-md5
+  endif
 else
   ifndef CONFIG_SIGNED_PACKAGES
     CONFIGURE_ARGS += --disable-usign
+  endif
+  ifeq ($(CONFIG_OPKG_SUPPORT_MD5),y)
+    CONFIGURE_ARGS += --enable-md5
+  else
+    CONFIGURE_ARGS += --disable-md5
   endif
 endif
 

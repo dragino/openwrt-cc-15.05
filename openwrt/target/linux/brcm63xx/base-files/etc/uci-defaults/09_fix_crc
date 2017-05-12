@@ -21,8 +21,11 @@ case "$(brcm63xx_board_name)" in
 	cpva642 |\
 	ct-6373 |\
 	dsl-274xb-f |\
+	evg2000 |\
+	hg622 |\
 	magic |\
 	p870hw-51a_v2 |\
+	r5010un_v2 |\
 	rta770bw |\
 	rta770w |\
 	spw303v |\
@@ -30,8 +33,8 @@ case "$(brcm63xx_board_name)" in
 	v2500v_bb |\
 	vr-3025u |\
 	vr-3025un |\
+	vr-3026e |\
 	wap-5813n)
 		do_fixcrc
 		;;
 esac
-

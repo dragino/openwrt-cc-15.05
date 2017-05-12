@@ -50,6 +50,7 @@ endef
 
 define Build/trx-with-loader
 	$(STAGING_DIR_HOST)/bin/trx \
+		-m 33554432 \
 		-o $@ \
 		-f $(KDIR)/loader.gz \
 		-f $(word 1,$^) \
@@ -106,15 +107,6 @@ define Build/motorola-bin
 	mv $@.new $@
 endef
 
-define Build/netgear-chk
-	$(STAGING_DIR_HOST)/bin/mkchkimg \
-		-o $@.new \
-		-k $@ \
-		-b $(BOARD_ID) \
-		-r $(REGION)
-	mv $@.new $@
-endef
-
 define Build/prepend-with-elf
 	mv $@ $@.old
 	dd if=$(KDIR)/loader.elf of=$@ bs=131072 conv=sync
@@ -136,7 +128,7 @@ endef
 
 DEVICE_VARS += PRODUCTID
 DEVICE_VARS += DEVICE_ID VERSION SERIAL
-DEVICE_VARS += BOARD_ID REGION
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_REGION
 DEVICE_VARS += MOTOROLA_DEVICE
 DEVICE_VARS += BIN_TAIL
 
@@ -210,8 +202,8 @@ endef
 define NetgearDevice
   define Device/netgear-$(1)
 	$$(Device/netgear)
-	BOARD_ID := $(2)
-	REGION := $(3)
+	NETGEAR_BOARD_ID := $(2)
+	NETGEAR_REGION := $(3)
   endef
   TARGET_DEVICES += netgear-$(1)
 endef
@@ -368,6 +360,7 @@ ifeq ($(SUBTARGET),mips74k)
   $(eval $(call LinksysDevice,e4200-v1,4200,1.0.5))
   $(eval $(call NetgearDevice,wgr614-v10_north-america,U12H139T01_NETGEAR,2))
   $(eval $(call NetgearDevice,wgr614-v10_other-regions,U12H139T01_NETGEAR,1))
+  $(eval $(call NetgearDevice,wn2500rp-v1,U12H197T00_NETGEAR,1))
   $(eval $(call NetgearDevice,wndr3400-v1,U12H155T00_NETGEAR,2))
   $(eval $(call NetgearDevice,wndr3400-v2,U12H187T00_NETGEAR,2))
   $(eval $(call NetgearDevice,wndr3400-v3,U12H208T00_NETGEAR,1))
@@ -392,8 +385,15 @@ endif
 #################################################
 
 define Image/Build/Initramfs
-	$(STAGING_DIR_HOST)/bin/trx -o $(BIN_DIR)/$(IMG_PREFIX)-initramfs.trx -f $(KDIR)/loader.gz -f $(KDIR)/vmlinux-initramfs.lzma
-	$(STAGING_DIR_HOST)/bin/trx -o $(BIN_DIR)/$(IMG_PREFIX)-initramfs-noloader-nodictionary.trx -f $(KDIR)/vmlinux-initramfs-nodictionary.lzma
+	$(STAGING_DIR_HOST)/bin/trx \
+		-m 33554432 \
+		-o $(BIN_DIR)/$(IMG_PREFIX)-initramfs.trx \
+		-f $(KDIR)/loader.gz \
+		-f $(KDIR)/vmlinux-initramfs.lzma
+	$(STAGING_DIR_HOST)/bin/trx \
+		-m 33554432 \
+		-o $(BIN_DIR)/$(IMG_PREFIX)-initramfs-noloader-nodictionary.trx \
+		-f $(KDIR)/vmlinux-initramfs-nodictionary.lzma
 endef
 
 # $(1): filesystem type.

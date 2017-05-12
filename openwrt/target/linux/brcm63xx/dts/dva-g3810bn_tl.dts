@@ -1,10 +1,16 @@
 /dts-v1/;
 
-/include/ "bcm6358.dtsi"
+#include "bcm6358.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "D-Link DVA-G3810BN/TL";
 	compatible = "d-link,dva-g3810bn/tl", "brcm,bcm6358";
+
+	chosen {
+		bootargs = "root=/dev/mtdblock2 rootfstype=squashfs,jffs2 noinitrd console=ttyS0,115200";
+	};
 
 	gpio-keys-polled {
 		compatible = "gpio-keys-polled";
@@ -16,7 +22,7 @@
 		reset {
 			label = "reset";
 			gpios = <&gpio1 2 1>;
-			linux,code = <0x198>;
+			linux,code = <KEY_RESTART>;
 		};
 	};
 

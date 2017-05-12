@@ -38,6 +38,28 @@ endef
 
 $(eval $(call Profile,UBNTUNIFI))
 
+define Profile/UBNTUNIFIACLITE
+	NAME:=Ubiquiti UniFi AP AC LITE/LR
+	PACKAGES:=kmod-ath10k ath10k-firmware-qca988x
+endef
+
+define Profile/UBNTUNIFIACLITE/Description
+	Package set optimized for the Ubiquiti UniFi AP AC LITE/LR.
+endef
+
+$(eval $(call Profile,UBNTUNIFIACLITE))
+
+define Profile/UBNTUNIFIACPRO
+	NAME:=Ubiquiti UniFi AP AC PRO
+	PACKAGES:=kmod-ath10k ath10k-firmware-qca988x kmod-usb-core kmod-usb-ohci kmod-usb2
+endef
+
+define Profile/UBNTUNIFIACPRO/Description
+	Package set optimized for the Ubiquiti UniFi AP AC PRO.
+endef
+
+$(eval $(call Profile,UBNTUNIFIACPRO))
+
 define Profile/UBNTUNIFIOUTDOOR
 	NAME:=Ubiquiti UniFiAP Outdoor
 	PACKAGES:=

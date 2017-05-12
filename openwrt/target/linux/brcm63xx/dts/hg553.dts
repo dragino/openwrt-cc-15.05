@@ -1,10 +1,16 @@
 /dts-v1/;
 
-/include/ "bcm6358.dtsi"
+#include "bcm6358.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "Huawei EchoLife HG553";
 	compatible = "huawei,hg553", "brcm,bcm6358";
+
+	chosen {
+		bootargs = "root=/dev/mtdblock2 rootfstype=squashfs,jffs2 noinitrd console=ttyS0,115200";
+	};
 
 	gpio-keys-polled {
 		compatible = "gpio-keys-polled";
@@ -16,13 +22,13 @@
 		rfkill {
 			label = "rfkill";
 			gpios = <&gpio0 9 1>;
-			linux,code = <0xf7>;
+			linux,code = <KEY_RFKILL>;
 		};
 
 		reset {
 			label = "reset";
 			gpios = <&gpio1 5 1>;
-			linux,code = <0x198>;
+			linux,code = <KEY_RESTART>;
 		};
 	};
 

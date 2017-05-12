@@ -476,7 +476,14 @@
 ##     Stop start.elf from filling in ATAGS (memory from 0x100) before
 ##     launching kernel
 ##
-#disable_commandline_tags=0
+#disable_commandline_tags=2
+
+## enable_uart
+##     Enables or disables uart pin multiplexing
+##     Raspberry Pi 1/2: if unset, uart is enabled by default
+##     Raspberry Pi 3: if unset uart is disabled by default
+##
+enable_uart=1
 
 ## cmdline (string)
 ##     Command line parameters. Can be used instead of cmdline.txt file
@@ -491,7 +498,7 @@
 ## kernel_address
 ##     Address to load kernel.img file at
 ##
-#kernel_address=0x00000000
+#kernel_address=0x8000
 
 ## ramfsfile (string)
 ##     ramfs file to load
@@ -515,7 +522,7 @@
 ## device_tree_address
 ##     Address to load device_tree at
 ##
-#device_tree_address=0x00000000
+#device_tree_address=0x100
 
 ## init_uart_baud
 ##     Initial uart baud rate.
@@ -921,3 +928,24 @@
 ##     8        1.4   V
 ##
 #over_voltage_sdram_p=0
+
+################################################################################
+##  Device Tree Settings
+################################################################################
+
+dtparam=random=on,watchdog=on,audio=on,i2c0=on,i2c1=on,spi=on
+
+#dtoverlay=adau1977-adc
+#dtoverlay=audioinjector-wm8731-audio
+#dtoverlay=hifiberry-amp
+#dtoverlay=hifiberry-dac
+#dtoverlay=hifiberry-dacplus
+#dtoverlay=hifiberry-digi
+#dtoverlay=iqaudio-dac
+#dtoverlay=iqaudio-dacplus
+#dtoverlay=justboom-dac
+#dtoverlay=justboom-digi
+#dtoverlay=raspidac3
+#dtoverlay=rpi-dac
+#dtoverlay=rpi-proto
+#dtoverlay=rra-digidac1-wm8741-audio

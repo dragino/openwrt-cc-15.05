@@ -77,6 +77,11 @@ setup_interface () {
 				-z "$RA_DNS" -a "$FAKE_ROUTES" = 1 ]; then
 			RA_ROUTES="::/0,$SERVER,$valid,4096"
 		fi
+
+		# RFC 7278
+		if [ "$mask" -eq 64 -a -z "$PREFIXES" -a -n "$EXTENDPREFIX" ]; then
+			proto_add_ipv6_prefix "$addr/$mask,$preferred,$valid"
+		fi
 	done
 
 	for entry in $RA_ROUTES; do
@@ -180,7 +185,7 @@ setup_interface () {
 	# Apply IPv6 / ND configuration
 	HOPLIMIT=$(cat /proc/sys/net/ipv6/conf/$device/hop_limit)
 	[ -n "$RA_HOPLIMIT" -a -n "$HOPLIMIT" ] && [ "$RA_HOPLIMIT" -gt "$HOPLIMIT" ] && echo "$RA_HOPLIMIT" > /proc/sys/net/ipv6/conf/$device/hop_limit
-	[ -n "$RA_MTU" ] && [ "$RA_MTU" -gt 0 ] && echo "$RA_MTU" > /proc/sys/net/ipv6/conf/$device/mtu
+	[ -n "$RA_MTU" ] && [ "$RA_MTU" -ge 1280 ] && echo "$RA_MTU" > /proc/sys/net/ipv6/conf/$device/mtu 2>/dev/null
 	[ -n "$RA_REACHABLE" ] && [ "$RA_REACHABLE" -gt 0 ] && echo "$RA_REACHABLE" > /proc/sys/net/ipv6/neigh/$device/base_reachable_time_ms
 	[ -n "$RA_RETRANSMIT" ] && [ "$RA_RETRANSMIT" -gt 0 ] && echo "$RA_RETRANSMIT" > /proc/sys/net/ipv6/neigh/$device/retrans_time_ms
 

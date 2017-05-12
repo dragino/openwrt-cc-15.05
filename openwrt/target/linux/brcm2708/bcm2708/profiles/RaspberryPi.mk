@@ -6,11 +6,9 @@
 #
 
 define Profile/RaspberryPi
-  NAME:=Raspberry Pi
+  NAME:=Raspberry Pi Models B/B+/CM
 endef
-
 define Profile/RaspberryPi/Description
-	Raspberry Pi board
+  Raspberry Pi Models B/B+/CM
 endef
-
 $(eval $(call Profile,RaspberryPi))

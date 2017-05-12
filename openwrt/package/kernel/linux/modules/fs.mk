@@ -26,6 +26,25 @@ endef
 
 $(eval $(call KernelPackage,fs-fscache))
 
+define KernelPackage/fs-9p
+  SUBMENU:=$(FS_MENU)
+  TITLE:=Plan 9 Resource Sharing Support
+  DEFAULT:=n
+  DEPENDS:=+kmod-9pnet
+  KCONFIG:=\
+	CONFIG_9P_FS=m \
+	CONFIG_9P_FS_POSIX_ACL=n \
+	CONFIG_9P_FS_SECURITY=n
+  FILES:=$(LINUX_DIR)/fs/9p/9p.ko
+  AUTOLOAD:=$(call AutoLoad,30,9p)
+endef
+
+define KernelPackage/fs-9p/description
+  Kernel module for Plan 9 Resource Sharing Support support
+endef
+
+$(eval $(call KernelPackage,fs-9p))
+
 define KernelPackage/fs-afs
   SUBMENU:=$(FS_MENU)
   TITLE:=Andrew FileSystem client
@@ -85,13 +104,13 @@ define KernelPackage/fs-cifs
   TITLE:=CIFS support
   KCONFIG:= \
 	CONFIG_CIFS \
+	CONFIG_CIFS_XATTR=y \
 	CONFIG_CIFS_DFS_UPCALL=n \
 	CONFIG_CIFS_UPCALL=n
   FILES:=$(LINUX_DIR)/fs/cifs/cifs.ko
   AUTOLOAD:=$(call AutoLoad,30,cifs)
   $(call AddDepends/nls)
   DEPENDS+= \
-    +kmod-crypto-arc4 \
     +kmod-crypto-hmac \
     +kmod-crypto-md5 \
     +kmod-crypto-md4 \
@@ -161,6 +180,7 @@ define KernelPackage/fs-ext4
     +kmod-crypto-hash
   KCONFIG:= \
 	CONFIG_EXT4_FS \
+	CONFIG_EXT4_ENCRYPTION=n \
 	CONFIG_JBD2
   FILES:= \
 	$(LINUX_DIR)/fs/ext4/ext4.ko \
@@ -387,7 +407,8 @@ $(eval $(call KernelPackage,fs-ntfs))
 define KernelPackage/fs-reiserfs
   SUBMENU:=$(FS_MENU)
   TITLE:=ReiserFS filesystem support
-  KCONFIG:=CONFIG_REISERFS_FS
+  KCONFIG:=CONFIG_REISERFS_FS \
+	CONFIG_REISERFS_FS_XATTR=y
   FILES:=$(LINUX_DIR)/fs/reiserfs/reiserfs.ko
   AUTOLOAD:=$(call AutoLoad,30,reiserfs,1)
 endef
@@ -397,6 +418,22 @@ define KernelPackage/fs-reiserfs/description
 endef
 
 $(eval $(call KernelPackage,fs-reiserfs))
+
+
+define KernelPackage/fs-squashfs
+  SUBMENU:=$(FS_MENU)
+  TITLE:=SquashFS 4.0 filesystem support
+  KCONFIG:=CONFIG_SQUASHFS \
+	CONFIG_SQUASHFS_XZ=y
+  FILES:=$(LINUX_DIR)/fs/squashfs/squashfs.ko
+  AUTOLOAD:=$(call AutoLoad,30,squashfs,1)
+endef
+
+define KernelPackage/fs-squashfs/description
+ Kernel module for SquashFS 4.0 support
+endef
+
+$(eval $(call KernelPackage,fs-squashfs))
 
 
 define KernelPackage/fs-udf

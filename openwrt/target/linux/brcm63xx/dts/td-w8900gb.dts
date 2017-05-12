@@ -1,10 +1,16 @@
 /dts-v1/;
 
-/include/ "bcm6348.dtsi"
+#include "bcm6348.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "TP-Link TD-W8900GB";
 	compatible = "tp-link,td-w8900gb", "brcm,bcm6348";
+
+	chosen {
+		bootargs = "root=/dev/mtdblock2 rootfstype=squashfs,jffs2 noinitrd console=ttyS0,115200";
+	};
 
 	gpio-keys-polled {
 		compatible = "gpio-keys-polled";
@@ -16,7 +22,7 @@
 		reset {
 			label = "reset";
 			gpios = <&gpio1 1 1>;
-			linux,code = <0x198>;
+			linux,code = <KEY_RESTART>;
 		};
 	};
 

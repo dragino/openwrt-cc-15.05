@@ -1,36 +1,48 @@
 #!/bin/sh
-#
-# Copyright (C) 2015 OpenWrt.org
-#
+# Copyright (C) 2015-2016 OpenWrt.org
 
-brcm2708_board_detect() {
-	local machine
-	local name
+ifname=""
 
-	machine=$(awk 'BEGIN{FS="[ \t]+:[ \t]"} /Hardware/ {print $2}' /proc/cpuinfo)
+brcm2708_detect() {
+	local board_name model
 
-	case "$machine" in
-	BCM2708)
-		name="Raspberry Pi"
+	model=$(cat /proc/device-tree/model)
+	case "$model" in
+	"Raspberry Pi Model B Rev"*)
+		board_name="rpi-b"
 		;;
-	BCM2709)
-		name="Raspberry Pi 2"
+	"Raspberry Pi Model B Plus Rev"* |\
+	"Raspberry Pi Model B+ Rev"*)
+		board_name="rpi-b-plus"
+		;;
+	"Raspberry Pi Compute Module Rev"*)
+		board_name="rpi-cm"
+		;;
+	"Raspberry Pi Zero Rev"*)
+		board_name="rpi-zero"
+		;;
+	"Raspberry Pi 2 Model B Rev"*)
+		board_name="rpi-2-b"
+		;;
+	"Raspberry Pi 3 Model B Rev"*)
+		board_name="rpi-3-b"
+		;;
+	*)
+		board_name="unknown"
 		;;
 	esac
 
-	[ -z "$name" ] && name="unknown"
+	[ -e "/tmp/sysinfo" ] || mkdir -p "/tmp/sysinfo"
 
-	[ -e "/tmp/sysinfo/" ] || mkdir -p "/tmp/sysinfo/"
-
-	echo "$machine" > /tmp/sysinfo/board_name
-	echo "$name" > /tmp/sysinfo/model
+	echo "$board_name" > /tmp/sysinfo/board_name
+	echo "$model" > /tmp/sysinfo/model
 }
 
 brcm2708_board_name() {
 	local name
 
 	[ -f /tmp/sysinfo/board_name ] && name=$(cat /tmp/sysinfo/board_name)
-	[ -z "$name" ] && name="unknown"
+	[ -n "$name" ] || name="unknown"
 
-	echo "$name"
+	echo $name
 }

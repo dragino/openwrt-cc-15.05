@@ -22,6 +22,8 @@ PKG_MD5SUM:=be62932eade308a364ea4bbc91295930
 HOST_BUILD_PARALLEL:=1
 PKG_BUILD_DEPENDS:=grub2/host
 
+PKG_SSP:=0
+
 include $(INCLUDE_DIR)/host-build.mk
 include $(INCLUDE_DIR)/package.mk
 
@@ -45,6 +47,8 @@ endef
 define Package/grub2-editenv/description
 	Edit grub2 environment files.
 endef
+
+HOST_BUILD_PREFIX := $(STAGING_DIR_HOST)
 
 CONFIGURE_ARGS += \
 	--target=$(REAL_GNU_TARGET_NAME) \

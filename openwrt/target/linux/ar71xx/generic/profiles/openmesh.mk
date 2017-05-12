@@ -5,17 +5,6 @@
 # See /LICENSE for more information.
 #
 
-define Profile/OM2P
-	NAME:=OpenMesh OM2P/OM2Pv2/OM2P-HS/OM2P-HSv2/OM2P-LC
-	PACKAGES:=kmod-ath9k om-watchdog
-endef
-
-define Profile/OM2P/Description
-	Package set optimized for the OpenMesh OM2P/OM2Pv2/OM2P-HS/OM2P-HSv2/OM2P-LC.
-endef
-
-$(eval $(call Profile,OM2P))
-
 define Profile/OM5P
 	NAME:=OpenMesh OM5P/OM5P-AN
 	PACKAGES:=kmod-ath9k om-watchdog
@@ -26,6 +15,17 @@ define Profile/OM5P/Description
 endef
 
 $(eval $(call Profile,OM5P))
+
+define Profile/OM5PAC
+	NAME:=OpenMesh OM5P-AC/OM5P-ACv2
+	PACKAGES:=kmod-ath9k kmod-ath10k om-watchdog
+endef
+
+define Profile/OM5PAC/Description
+	Package set optimized for the OpenMesh OM5P-AC/OM5P-ACv2.
+endef
+
+$(eval $(call Profile,OM5PAC))
 
 define Profile/MR600
         NAME:=OpenMesh MR600
@@ -49,9 +49,20 @@ endef
 
 $(eval $(call Profile,MR900))
 
+define Profile/MR1750
+        NAME:=OpenMesh MR1750/MR1750v2
+        PACKAGES:=kmod-ath9k kmod-ath10k
+endef
+
+define Profile/MR1750/Description
+        Package set optimized for the OpenMesh MR1750/MR1750v2.
+endef
+
+$(eval $(call Profile,MR1750))
+
 define Profile/OPENMESH
 	NAME:=OpenMesh products
-	PACKAGES:=kmod-ath9k om-watchdog
+	PACKAGES:=kmod-ath9k kmod-ath10k om-watchdog
 endef
 
 define Profile/OPENMESH/Description

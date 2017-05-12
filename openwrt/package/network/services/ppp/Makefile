@@ -10,12 +10,12 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=ppp
 PKG_VERSION:=2.4.7
-PKG_RELEASE:=6
+PKG_RELEASE:=9
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://download.samba.org/pub/ppp/
 PKG_MD5SUM:=78818f40e6d33a1d1de68a1551f6595a
-PKG_MAINTAINER:=Felix Fietkau <nbd@openwrt.org>
+PKG_MAINTAINER:=Felix Fietkau <nbd@nbd.name>
 PKG_LICENSE:=BSD-4-Clause
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-$(BUILD_VARIANT)/$(PKG_NAME)-$(PKG_VERSION)
@@ -30,7 +30,7 @@ include $(INCLUDE_DIR)/package.mk
 define Package/ppp/Default
   SECTION:=net
   CATEGORY:=Network
-  URL:=http://ppp.samba.org/
+  URL:=https://ppp.samba.org/
 endef
 
 define Package/ppp
@@ -115,6 +115,17 @@ endef
 
 define Package/ppp-mod-pptp/description
 This package contains a PPtP plugin for ppp.
+endef
+
+define Package/ppp-mod-passwordfd
+$(call Package/ppp/Default)
+  DEPENDS:=@(PACKAGE_ppp||PACKAGE_ppp-multilink)
+  TITLE:=pap/chap secret from filedescriptor
+endef
+
+define Package/ppp-mod-passwordfd/description
+This package allows to pass the PAP/CHAP secret from a filedescriptor.
+Eliminates the need for a secrets file.
 endef
 
 define Package/chat
@@ -238,6 +249,12 @@ define Package/ppp-mod-pptp/install
 	$(INSTALL_DATA) ./files/etc/ppp/options.pptp $(1)/etc/ppp/
 endef
 
+define Package/ppp-mod-passwordfd/install
+	$(INSTALL_DIR) $(1)/usr/lib/pppd/$(PKG_VERSION)
+	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/lib/pppd/$(PKG_VERSION)/passwordfd.so \
+		$(1)/usr/lib/pppd/$(PKG_VERSION)/
+endef
+
 define Package/chat/install
 	$(INSTALL_DIR) $(1)/usr/sbin
 	$(INSTALL_BIN) $(PKG_INSTALL_DIR)/sbin/chat $(1)/usr/sbin/
@@ -260,6 +277,7 @@ $(eval $(call BuildPackage,ppp-mod-pppoe))
 $(eval $(call BuildPackage,ppp-mod-radius))
 $(eval $(call BuildPackage,ppp-mod-pppol2tp))
 $(eval $(call BuildPackage,ppp-mod-pptp))
+$(eval $(call BuildPackage,ppp-mod-passwordfd))
 $(eval $(call BuildPackage,chat))
 $(eval $(call BuildPackage,pppdump))
 $(eval $(call BuildPackage,pppstats))

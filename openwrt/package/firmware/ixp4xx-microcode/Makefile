@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (C) 2007 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
@@ -14,6 +14,8 @@ PKG_RELEASE:=2
 PKG_SOURCE:=IPL_ixp400NpeLibraryWithCrypto-2_4.zip
 PKG_SOURCE_URL:=http://downloads.openwrt.org/sources
 PKG_MD5SUM:=dd5f6482e625ecb334469958bcd54b37
+
+PKG_FLAGS:=nonshared
 
 include $(INCLUDE_DIR)/package.mk
 

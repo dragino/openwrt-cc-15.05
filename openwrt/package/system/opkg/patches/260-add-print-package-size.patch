@@ -36,7 +36,7 @@
  	{"test", 0, 0, ARGS_OPT_NOACTION},
  	{"tmp-dir", 1, 0, 't'},
  	{"tmp_dir", 1, 0, 't'},
-@@ -207,6 +209,9 @@ args_parse(int argc, char *argv[])
+@@ -212,6 +214,9 @@ args_parse(int argc, char *argv[])
  			}
  			free(tuple);
  			break;
@@ -46,7 +46,7 @@
  		case ARGS_OPT_NOACTION:
  			conf->noaction = 1;
  			break;
-@@ -310,6 +315,7 @@ usage()
+@@ -315,6 +320,7 @@ usage()
  	printf("\t--download-only	No action -- download only\n");
  	printf("\t--nodeps		Do not follow dependencies\n");
  	printf("\t--nocase		Perform case insensitive pattern matching\n");

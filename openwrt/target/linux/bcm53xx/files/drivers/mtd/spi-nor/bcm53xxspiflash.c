@@ -4,12 +4,12 @@
 #include <linux/mtd/spi-nor.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/cfi.h>
+#include <linux/mtd/partitions.h>
 
-static const char * const probes[] = { "bcm47xxpart", NULL };
+static const char * const probes[] = { "ofpart", "bcm47xxpart", NULL };
 
 struct bcm53xxsf {
 	struct spi_device *spi;
-	struct mtd_info mtd;
 	struct spi_nor nor;
 };
 
@@ -26,7 +26,7 @@ static int bcm53xxspiflash_read_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
 }
 
 static int bcm53xxspiflash_write_reg(struct spi_nor *nor, u8 opcode, u8 *buf,
-				     int len, int write_enable)
+				     int len)
 {
 	struct bcm53xxsf *b53sf = nor->priv;
 	u8 *cmd = kzalloc(len + 1, GFP_KERNEL);
@@ -57,7 +57,7 @@ static int bcm53xxspiflash_read(struct spi_nor *nor, loff_t from, size_t len,
 	spi_message_init(&m);
 
 	cmd[cmd_len++] = SPINOR_OP_READ;
-	if (b53sf->mtd.size > 0x1000000)
+	if (nor->mtd.size > 0x1000000)
 		cmd[cmd_len++] = (from & 0xFF000000) >> 24;
 	cmd[cmd_len++] = (from & 0x00FF0000) >> 16;
 	cmd[cmd_len++] = (from & 0x0000FF00) >> 8;
@@ -97,7 +97,7 @@ static void bcm53xxspiflash_write(struct spi_nor *nor, loff_t to, size_t len,
 	spi_message_init(&m);
 
 	cmd[cmd_len++] = nor->program_opcode;
-	if (b53sf->mtd.size > 0x1000000)
+	if (nor->mtd.size > 0x1000000)
 		cmd[cmd_len++] = (to & 0xFF000000) >> 24;
 	cmd[cmd_len++] = (to & 0x00FF0000) >> 16;
 	cmd[cmd_len++] = (to & 0x0000FF00) >> 8;
@@ -127,7 +127,7 @@ static int bcm53xxspiflash_erase(struct spi_nor *nor, loff_t offs)
 
 	i = 0;
 	cmd[i++] = nor->erase_opcode;
-	if (b53sf->mtd.size > 0x1000000)
+	if (nor->mtd.size > 0x1000000)
 		cmd[i++] = (offs & 0xFF000000) >> 24;
 	cmd[i++] = ((offs & 0x00FF0000) >> 16);
 	cmd[i++] = ((offs & 0x0000FF00) >> 8);
@@ -176,6 +176,7 @@ static const char *bcm53xxspiflash_chip_name(struct spi_nor *nor)
 
 static int bcm53xxspiflash_probe(struct spi_device *spi)
 {
+	struct mtd_part_parser_data parser_data = {};
 	struct bcm53xxsf *b53sf;
 	struct spi_nor *nor;
 	int err;
@@ -187,9 +188,7 @@ static int bcm53xxspiflash_probe(struct spi_device *spi)
 
 	nor = &b53sf->nor;
 	b53sf->spi = spi;
-	b53sf->mtd.priv = &b53sf->nor;
 
-	nor->mtd = &b53sf->mtd;
 	nor->dev = &spi->dev;
 	nor->read_reg = bcm53xxspiflash_read_reg;
 	nor->write_reg = bcm53xxspiflash_write_reg;
@@ -203,7 +202,9 @@ static int bcm53xxspiflash_probe(struct spi_device *spi)
 	if (err)
 		return err;
 
-	err = mtd_device_parse_register(&b53sf->mtd, probes, NULL, NULL, 0);
+	parser_data.of_node = spi->master->dev.parent->of_node;
+	err = mtd_device_parse_register(&nor->mtd, probes, &parser_data,
+					NULL, 0);
 	if (err)
 		return err;
 

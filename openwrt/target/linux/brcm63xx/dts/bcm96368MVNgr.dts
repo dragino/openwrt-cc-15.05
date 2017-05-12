@@ -1,10 +1,16 @@
 /dts-v1/;
 
-/include/ "bcm6368.dtsi"
+#include "bcm6368.dtsi"
+
+#include <dt-bindings/input/input.h>
 
 / {
 	model = "Broadcom BCM96368MVNgr reference board";
 	compatible = "brcm,bcm96368mvngr", "brcm,bcm6368";
+
+	chosen {
+		bootargs = "root=/dev/mtdblock2 rootfstype=squashfs,jffs2 noinitrd console=ttyS0,115200";
+	};
 
 	gpio-leds {
 		compatible = "gpio-leds";

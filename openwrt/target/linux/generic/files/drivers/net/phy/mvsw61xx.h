@@ -4,7 +4,7 @@
  * Copyright (c) 2014 Claudio Leite <leitec@staticky.com>
  * Copyright (c) 2014 Nikita Nazarenko <nnazarenko@radiofid.com>
  *
- * Based on code (c) 2008 Felix Fietkau <nbd@openwrt.org>
+ * Based on code (c) 2008 Felix Fietkau <nbd@nbd.name>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License v2 as published by the
@@ -224,6 +224,11 @@ enum {
 
 #define MV_PVID_MASK			0x0fff
 
+#define MV_FDB_HI_MASK			0x00ff
+#define MV_FDB_LO_MASK			0xf000
+#define MV_FDB_HI_SHIFT			4
+#define MV_FDB_LO_SHIFT			12
+
 struct mvsw61xx_state {
 	struct switch_dev dev;
 	struct mii_bus *bus;
@@ -238,6 +243,7 @@ struct mvsw61xx_state {
 
 	int vlan_enabled;
 	struct port_state {
+		u16 fdb;
 		u16 pvid;
 		u16 mask;
 		u8 qmode;

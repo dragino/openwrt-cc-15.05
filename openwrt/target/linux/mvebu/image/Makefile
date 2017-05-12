@@ -4,15 +4,13 @@
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
 #
+
+JFFS2_BLOCKSIZE = 128k
+
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
 LOADADDR:=0x00008000
-
-JFFS2_BLOCKSIZE = 128k
-
-KDIR_TMP:=$(KDIR)/tmp
-
 
 define Image/Build/DTB
 	cp $(KDIR)/zImage$(2) $(KDIR)/zImage$(2)-$(1);
@@ -91,8 +89,8 @@ define NORProfile
 
   define Image/Build/Profile/$(1)/squashfs
 	( \
-		dd if=$(KDIR)/uImage-$(2) bs=$(3) conv=sync; \
-		dd if=$(KDIR)/root.squashfs bs=$(3) conv=sync; \
+		dd if=$(KDIR)/uImage-$(2) bs=$(patsubst %KiB,%k,$(3)) conv=sync; \
+		dd if=$(KDIR)/root.squashfs bs=$(patsubst %KiB,%k,$(3)) conv=sync; \
 	) > $$(BIN_DIR)/$$(IMG_PREFIX)-$(2)-squashfs-firmware.bin
   endef
 
@@ -155,13 +153,14 @@ $(eval $(call NANDProfile,XP-GP,armada-xp-gp,512KiB,4096))
 $(eval $(call NANDProfile,Mamba,armada-xp-linksys-mamba,128KiB,2048,512,2048))
 $(eval $(call NANDProfile,Caiman,armada-385-linksys-caiman,128KiB,2048,512,2048))
 $(eval $(call NANDProfile,Cobra,armada-385-linksys-cobra,128KiB,2048,512,2048))
+$(eval $(call NANDProfile,Rango,armada-385-linksys-rango,128KiB,2048,512,2048))
 $(eval $(call NANDProfile,Shelby,armada-385-linksys-shelby,128KiB,2048,512,2048))
 
 # Boards with large NOR, where we want to use UBI
 $(eval $(call UBINORProfile,OpenBlocks-AX-3-4,armada-xp-openblocks-ax3-4,128KiB))
 
 # Boards with small NOR, where UBI doesn't make sense
-$(eval $(call NORProfile,385-RD,armada-385-rd,256KiB))
+$(eval $(call NORProfile,388-RD,armada-388-rd,256KiB))
 
 $(eval $(call MMCProfile,Solidrun-Clearfog-A1,armada-388-clearfog))
 
@@ -173,7 +172,7 @@ $(eval $(call MMCProfile,Solidrun-Clearfog-A1,armada-388-clearfog))
 define Image/Build/Profile/Caiman/squashfs
 	$(call Image/Build/UbinizeImage,armada-385-linksys-caiman,,squashfs, -p 128KiB -m 2048 -s 512 -O 2048)
 	( \
-		dd if=$(KDIR)/uImage-armada-385-linksys-caiman bs=6M conv=sync; \
+		dd if=$(KDIR)/uImage-armada-385-linksys-caiman bs=6144k conv=sync; \
 		dd if=$(KDIR)/$(IMG_PREFIX)-armada-385-linksys-caiman-squashfs-ubinized.bin \
 		bs=2048 conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-armada-385-linksys-caiman-squashfs-factory.img
@@ -183,7 +182,7 @@ endef
 define Image/Build/Profile/Cobra/squashfs
 	$(call Image/Build/UbinizeImage,armada-385-linksys-cobra,,squashfs, -p 128KiB -m 2048 -s 512 -O 2048)
 	( \
-		dd if=$(KDIR)/uImage-armada-385-linksys-cobra bs=6M conv=sync; \
+		dd if=$(KDIR)/uImage-armada-385-linksys-cobra bs=6144k conv=sync; \
 		dd if=$(KDIR)/$(IMG_PREFIX)-armada-385-linksys-cobra-squashfs-ubinized.bin \
 		bs=2048 conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-armada-385-linksys-cobra-squashfs-factory.img
@@ -203,10 +202,20 @@ endef
 define Image/Build/Profile/Shelby/squashfs
 	$(call Image/Build/UbinizeImage,armada-385-linksys-shelby,,squashfs, -p 128KiB -m 2048 -s 512 -O 2048)
 	( \
-		dd if=$(KDIR)/uImage-armada-385-linksys-shelby bs=6M conv=sync; \
+		dd if=$(KDIR)/uImage-armada-385-linksys-shelby bs=6144k conv=sync; \
 		dd if=$(KDIR)/$(IMG_PREFIX)-armada-385-linksys-shelby-squashfs-ubinized.bin \
 		bs=2048 conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-armada-385-linksys-shelby-squashfs-factory.img
+endef
+
+# Rango: Linksys WRT3200ACM
+define Image/Build/Profile/Rango/squashfs
+	$(call Image/Build/UbinizeImage,armada-385-linksys-rango,,squashfs, -p 128KiB -m 2048 -s 512 -O 2048)
+	( \
+		dd if=$(KDIR)/uImage-armada-385-linksys-rango bs=6144k conv=sync; \
+		dd if=$(KDIR)/$(IMG_PREFIX)-armada-385-linksys-rango-squashfs-ubinized.bin \
+		bs=2048 conv=sync; \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-armada-385-linksys-rango-squashfs-factory.img
 endef
 
 ###

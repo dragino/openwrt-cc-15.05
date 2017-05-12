@@ -2,7 +2,7 @@
 # Makefile for the kernel relocation stub for MIPS devices
 #
 # Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
-# Copyright (C) 2015 Felix Fietkau <nbd@openwrt.org>
+# Copyright (C) 2015 Felix Fietkau <nbd@nbd.name>
 #
 # Some parts of this file was based on the OpenWrt specific lzma-loader
 # for the BCM47xx and ADM5120 based boards:
@@ -29,7 +29,8 @@ LD		:= $(CROSS_COMPILE)ld
 OBJCOPY		:= $(CROSS_COMPILE)objcopy
 OBJDUMP		:= $(CROSS_COMPILE)objdump
 
-BIN_FLAGS	:= -O binary -R .reginfo -R .note -R .comment -R .mdebug -S
+BIN_FLAGS	:= -O binary -R .reginfo -R .note -R .comment -R .mdebug \
+		   -R .MIPS.abiflags -S
 
 CFLAGS		= -D__KERNEL__ -Wall -Wstrict-prototypes -Wno-trigraphs -Os \
 		  -fno-strict-aliasing -fno-common -fomit-frame-pointer -G 0 \

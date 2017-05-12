@@ -7,7 +7,7 @@ platform_check_image() {
 	local board=$(lantiq_board_name)
 
 	case "$board" in
-		BTHOMEHUBV2B|BTHOMEHUBV3A|P2812HNUF* )
+		BTHOMEHUBV2B|BTHOMEHUBV3A|BTHOMEHUBV5A|P2812HNUF* )
 			nand_do_platform_check $board $1
 			return $?;
 			;;
@@ -16,11 +16,23 @@ platform_check_image() {
 	case "$(get_magic_word "$1")" in
 		# uImage
 		2705) return 0;;
+		# AVM
+		8112) return 0;;
 		# tplink
 		0200) return 0;;
 		*)
 			echo "Invalid image type"
 			return 1
+		;;
+	esac
+}
+
+platform_pre_upgrade() {
+	local board=$(lantiq_board_name)
+
+	case "$board" in
+	BTHOMEHUBV2B|BTHOMEHUBV3A|BTHOMEHUBV5A|P2812HNUF* )
+		nand_do_upgrade $1
 		;;
 	esac
 }

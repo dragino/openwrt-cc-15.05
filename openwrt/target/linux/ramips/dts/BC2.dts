@@ -1,24 +1,14 @@
 /dts-v1/;
 
-/include/ "rt3050.dtsi"
+#include "rt3050.dtsi"
 
 / {
 	compatible = "BC2", "ralink,rt3052-soc";
 	model = "NexAira BC2";
 
-	pinctrl {
-		state_default: pinctrl0 {
-			gpio {
-				ralink,group = "spi", "i2c", "jtag", "rgmii", "mdio", "uartf";
-				ralink,function = "gpio";
-			};
-		};
-	};
-
 	cfi@1f000000 {
 		compatible = "cfi-flash";
 		reg = <0x1f000000 0x800000>;
-
 		bank-width = <2>;
 		device-width = <2>;
 		#address-cells = <1>;
@@ -50,6 +40,7 @@
 
 	gpio-leds {
 		compatible = "gpio-leds";
+
 		usb {
 			label = "bc2:blue:usb";
 			gpios = <&gpio0 20 1>;
@@ -61,26 +52,36 @@
 		#address-cells = <1>;
 		#size-cells = <0>;
 		poll-interval = <20>;
+
 		reset {
 			label = "reset";
 			gpios = <&gpio0 17 1>;
 			linux,code = <0x198>;
 		};
 	};
+};
 
-	ethernet@10100000 {
-		mtd-mac-address = <&factory 0x4>;
+&pinctrl {
+	state_default: pinctrl0 {
+		gpio {
+			ralink,group = "spi", "i2c", "jtag", "rgmii", "mdio", "uartf";
+			ralink,function = "gpio";
+		};
 	};
+};
 
-	esw@10110000 {
-		ralink,portmap = <0x2f>;
-	};
+&ethernet {
+	mtd-mac-address = <&factory 0x4>;
+};
 
-	wmac@10180000 {
-		ralink,mtd-eeprom = <&factory 0>;
-	};
+&esw {
+	mediatek,portmap = <0x2f>;
+};
 
-	otg@101c0000 {
-		status = "okay";
-	};
+&wmac {
+	ralink,mtd-eeprom = <&factory 0>;
+};
+
+&otg {
+	status = "okay";
 };

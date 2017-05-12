@@ -20,20 +20,26 @@
 		compatible = "mti,cpu-interrupt-controller";
 	};
 
-	palmbus@10000000 {
+	aliases {
+		spi0 = &spi0;
+		spi1 = &spi1;
+		serial0 = &uartlite;
+	};
+
+	palmbus: palmbus@10000000 {
 		compatible = "palmbus";
 		reg = <0x10000000 0x200000>;
-                ranges = <0x0 0x10000000 0x1FFFFF>;
+		ranges = <0x0 0x10000000 0x1FFFFF>;
 
 		#address-cells = <1>;
 		#size-cells = <1>;
 
-		sysc@0 {
+		sysc: sysc@0 {
 			compatible = "ralink,mt7620a-sysc", "ralink,rt3050-sysc";
 			reg = <0x0 0x100>;
 		};
 
-		timer@100 {
+		timer: timer@100 {
 			compatible = "ralink,mt7620a-timer", "ralink,rt2880-timer";
 			reg = <0x100 0x20>;
 
@@ -41,7 +47,7 @@
 			interrupts = <1>;
 		};
 
-		watchdog@120 {
+		watchdog: watchdog@120 {
 			compatible = "ralink,mt7620a-wdt", "ralink,rt2880-wdt";
 			reg = <0x120 0x10>;
 
@@ -66,7 +72,7 @@
 			interrupts = <2>;
 		};
 
-		memc@300 {
+		memc: memc@300 {
 			compatible = "ralink,mt7620a-memc", "ralink,rt3050-memc";
 			reg = <0x300 0x100>;
 
@@ -154,15 +160,15 @@
 			status = "disabled";
 		};
 
-		spi@b00 {
+		spi0: spi@b00 {
 			compatible = "ralink,mt7620a-spi", "ralink,rt2880-spi";
-			reg = <0xb00 0x100>;
+			reg = <0xb00 0x40>;
 
 			resets = <&rstctrl 18>;
 			reset-names = "spi";
 
 			#address-cells = <1>;
-			#size-cells = <1>;
+			#size-cells = <0>;
 
 			status = "disabled";
 
@@ -170,7 +176,23 @@
 			pinctrl-0 = <&spi_pins>;
 		};
 
-		uartlite@c00 {
+		spi1: spi@b40 {
+			compatible = "ralink,rt2880-spi";
+			reg = <0xb40 0x60>;
+
+			resets = <&rstctrl 18>;
+			reset-names = "spi";
+
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			status = "disabled";
+
+			pinctrl-names = "default";
+			pinctrl-0 = <&spi_cs1>;
+		};
+
+		uartlite: uartlite@c00 {
 			compatible = "ralink,mt7620a-uart", "ralink,rt2880-uart", "ns16550a";
 			reg = <0xc00 0x100>;
 
@@ -186,7 +208,7 @@
 			pinctrl-0 = <&uartlite_pins>;
 		};
 
-		systick@d00 {
+		systick: systick@d00 {
 			compatible = "ralink,mt7620a-systick", "ralink,cevt-systick";
 			reg = <0xd00 0x10>;
 
@@ -198,18 +220,28 @@
 		};
 	};
 
-	pinctrl {
+	pinctrl: pinctrl {
 		compatible = "ralink,rt2880-pinmux";
 		pinctrl-names = "default";
 		pinctrl-0 = <&state_default>;
+
 		state_default: pinctrl0 {
 		};
+
 		spi_pins: spi {
 			spi {
 				ralink,group = "spi";
 				ralink,function = "spi";
 			};
 		};
+
+		spi_cs1: spi1 {
+			spi1 {
+				ralink,group = "spi_cs1";
+				ralink,function = "spi_cs1";
+			};
+		};
+
 		uartlite_pins: uartlite {
 			uart {
 				ralink,group = "uartlite";
@@ -223,17 +255,25 @@
 		#reset-cells = <1>;
 	};
 
+	clkctrl: clkctrl {
+		compatible = "ralink,rt2880-clock";
+		#clock-cells = <1>;
+	};
+
 	usbphy: usbphy {
-		compatible = "ralink,mt7620a-usbphy";
+		compatible = "mediatek,mt7620-usbphy";
 		#phy-cells = <1>;
 
 		resets = <&rstctrl 22 &rstctrl 25>;
 		reset-names = "host", "device";
+
+		clocks = <&clkctrl 22 &clkctrl 25>;
+		clock-names = "host", "device";
 	};
 
-	ethernet@10100000 {
-		compatible = "ralink,mt7620a-eth";
-		reg = <0x10100000 10000>;
+	ethernet: ethernet@10100000 {
+		compatible = "mediatek,mt7620-eth";
+		reg = <0x10100000 0x10000>;
 
 		#address-cells = <1>;
 		#size-cells = <0>;
@@ -244,6 +284,8 @@
 		resets = <&rstctrl 21 &rstctrl 23>;
 		reset-names = "fe", "esw";
 
+		mediatek,switch = <&gsw>;
+
 		mdio-bus {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -252,20 +294,20 @@
 		};
 	};
 
-	gsw@10110000 {
-		compatible = "ralink,mt7620a-gsw";
-		reg = <0x10110000 8000>;
+	gsw: gsw@10110000 {
+		compatible = "mediatek,mt7620-gsw";
+		reg = <0x10110000 0x8000>;
 
 		resets = <&rstctrl 23>;
 		reset-names = "esw";
 
 		interrupt-parent = <&intc>;
 		interrupts = <17>;
-		ralink,port4 = "gmac";
+		mediatek,port4 = "gmac";
 	};
 
-	ehci@101c0000 {
-		compatible = "ralink,rt3xxx-ehci";
+	ehci: ehci@101c0000 {
+		compatible = "generic-ehci";
 		reg = <0x101c0000 0x1000>;
 
 		interrupt-parent = <&intc>;
@@ -277,8 +319,8 @@
 		status = "disabled";
 	};
 
-	ohci@101c1000 {
-		compatible = "ralink,rt3xxx-ohci";
+	ohci: ohci@101c1000 {
+		compatible = "generic-ohci";
 		reg = <0x101c1000 0x1000>;
 
 		phys = <&usbphy 1>;
@@ -290,9 +332,9 @@
 		status = "disabled";
 	};
 
-	wmac@10180000 {
+	wmac: wmac@10180000 {
 		compatible = "ralink,rt7620-wmac", "ralink,rt2880-wmac";
-		reg = <0x10180000 40000>;
+		reg = <0x10180000 0x40000>;
 
 		interrupt-parent = <&cpuintc>;
 		interrupts = <6>;

@@ -5,16 +5,15 @@
 # See /LICENSE for more information.
 #
 
-define Profile/YUN
-	NAME:=Arduino Yun
+define Profile/Yun
+	NAME:=Arduino Yun based on Atheros AR9331
 	PACKAGES:=kmod-usb-core kmod-usb2
 endef
 
-define Profile/YUN/Description
+define Profile/Yun/Description
 	Package set optimized for the Arduino Yun.
+	This is sometimes also named Genuino Yun or Linino Yun.
 endef
 
-$(eval $(call Profile,YUN))
-
-
+$(eval $(call Profile,Yun))
 
