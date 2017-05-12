@@ -1,0 +1,66 @@
+--- a/client/sub_client.c
++++ b/client/sub_client.c
+@@ -59,6 +59,9 @@ struct userdata {
+ 	bool eol;
+ };
+ 
++static char *output_file = NULL;
++static bool output_to_file = false;
++
+ void my_message_callback(struct mosquitto *mosq, void *obj, const struct mosquitto_message *message)
+ {
+ 	struct userdata *ud;
+@@ -91,9 +94,17 @@ void my_message_callback(struct mosquitt
+ 		fflush(stdout);
+ 	}else{
+ 		if(message->payloadlen){
+-			fwrite(message->payload, 1, message->payloadlen, stdout);
+-			if(ud->eol){
+-				printf("\n");
++			if (output_to_file){
++				FILE *fptr = NULL;
++				fptr = fopen(output_file, "w+");
++				fwrite(message->payload, 1, message->payloadlen,fptr);
++				fclose(fptr);
++			}
++			else{
++				fwrite(message->payload, 1, message->payloadlen, stdout);
++				if(ud->eol){
++					printf("\n");
++				}
+ 			}
+ 			fflush(stdout);
+ 		}
+@@ -148,6 +159,7 @@ void print_usage(void)
+ 	printf("mosquitto_sub version %s running on libmosquitto %d.%d.%d.\n\n", VERSION, major, minor, revision);
+ 	printf("Usage: mosquitto_sub [-c] [-h host] [-k keepalive] [-p port] [-q qos] [-R] -t topic ...\n");
+ 	printf("                     [-T filter_out]\n");
++	printf("                     [-O output_file]\n");
+ #ifdef WITH_SRV
+ 	printf("                     [-A bind_address] [-S]\n");
+ #else
+@@ -173,6 +185,7 @@ void print_usage(void)
+ 	printf(" -i : id to use for this client. Defaults to mosquitto_sub_ appended with the process id.\n");
+ 	printf(" -I : define the client id as id_prefix appended with the process id. Useful for when the\n");
+ 	printf("      broker is using the clientid_prefixes option.\n");
++	printf(" -O : Send subscribe message to a output file\n");
+ 	printf(" -k : keep alive in seconds for this client. Defaults to 60.\n");
+ 	printf(" -N : do not add an end of line character when printing the payload.\n");
+ 	printf(" -p : network port to connect to. Defaults to 1883.\n");
+@@ -309,6 +322,16 @@ int main(int argc, char *argv[])
+ 				certfile = argv[i+1];
+ 			}
+ 			i++;
++		}else if(!strcmp(argv[i], "-O")){
++			if(i==argc-1){
++				fprintf(stderr, "Error: -O argument given but no file specified.\n\n");
++				print_usage();
++				return 1;
++			}else{
++				output_file = argv[i+1];
++				output_to_file = true;
++			}
++			i++;
+ 		}else if(!strcmp(argv[i], "--ciphers")){
+ 			if(i==argc-1){
+ 				fprintf(stderr, "Error: --ciphers argument given but no ciphers specified.\n\n");
