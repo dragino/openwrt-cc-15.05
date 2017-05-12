@@ -5,7 +5,7 @@ SFLAG=
 AFLAG=
 BFLAG=
 
-APP=yun
+APP=IoT
 APP2=
 IMAGE_SUFFIX=
 
@@ -50,10 +50,17 @@ shift $(($OPTIND - 1))
 
 
 BUILD=$APP-$VERSION
+
 BUILD_TIME="`date`"
 
 ARCH="ar71xx"
-file_prefix="openwrt-ar71xx-generic-yun"
+
+file_prefix="openwrt-ar71xx-generic-dragino2"
+
+#if [ ! -z $APP ];then
+#    file_prefix=$file_prefix"-"$APP
+#fi
+
 if [ $APP = "duo" ];then
 	echo "Arch is ramips"
 	ARCH="ramips"
@@ -61,24 +68,17 @@ if [ $APP = "duo" ];then
 fi
 
 echo ""
+
 echo "Remove custom files from last build"
+
 rm -rf $OPENWRT_PATH/files
 
-mkdir $OPENWRT_PATH/files
-
-if [ $APP = "IoT" ];then
-	echo ""
-	echo "***Copy General Files***"
-	cp -r general_files/* $OPENWRT_PATH/files/
-	file_prefix="openwrt-ar71xx-generic-dragino2"
-fi
+cp -r general_files $OPENWRT_PATH/files
 
 if [ -d files-$APP ];then
 	echo "***Copy files-$APP to default files directory***"
 	echo ""
-	cp -r files-$APP/* $OPENWRT_PATH/files/
-else 
-	echo ""
+	cp -r files-$APP/?* $OPENWRT_PATH/files/
 fi
 
 if [ -f .config.$APP ];then
@@ -104,8 +104,11 @@ if [ ! -z $BFLAG ];then
 fi
 
 echo ""
+
 echo "***Entering build directory***"
+
 cd $OPENWRT_PATH
+
 echo ""
 
 echo ""
@@ -120,9 +123,10 @@ echo ""
 echo "***Activate $APP config as default config***"
 echo " Run defconfig"
 echo ""
-make defconfig > /dev/null
 
-[ -f ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin ] && rm ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin
+make defconfig 2>&1> /dev/null
+
+[ -f ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin ] && rm -rf ./bin/$ARCH/??*
 
 echo ""
 if [ ! -z $SFLAG ];then
@@ -132,7 +136,6 @@ else
 	echo "***Run make for dragion ms14, HE***"
 	make -j8 V=99
 fi
-
 
 if [ ! -f ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin ];then
 	echo ""
