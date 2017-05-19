@@ -14,7 +14,7 @@ How to compile the image?
 ``` bash
 git clone https://github.com/dragino/openwrt-cc-15.05.git openwrt-cc-15.05
 cd openwrt-cc-15.05
-./set_up_build_enviroment.sh
+./set_up_build_environment.sh
 #build default IoT App on openwrt directory
 ./build_image.sh -a IoT
 
