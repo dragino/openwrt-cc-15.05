@@ -1433,7 +1433,7 @@ CONFIG_PACKAGE_muninlite=y
 #
 # Boot Loaders
 #
-CONFIG_PACKAGE_uboot-ar71xx-nbg460n_550n_550nh=y
+# CONFIG_PACKAGE_uboot-ar71xx-nbg460n_550n_550nh is not set
 
 #
 # Development
@@ -1805,7 +1805,6 @@ CONFIG_KMOD_BATMAN_ADV_BLA=y
 CONFIG_KMOD_BATMAN_ADV_DAT=y
 CONFIG_KMOD_BATMAN_ADV_MCAST=y
 # CONFIG_KMOD_BATMAN_ADV_NC is not set
-# CONFIG_KMOD_BATMAN_ADV_BATMAN_V is not set
 # CONFIG_PACKAGE_kmod-bonding is not set
 # CONFIG_PACKAGE_kmod-bridge is not set
 # CONFIG_PACKAGE_kmod-capi is not set
@@ -2101,7 +2100,6 @@ CONFIG_PACKAGE_libiwinfo-lua=y
 # CONFIG_PACKAGE_lpeg is not set
 CONFIG_PACKAGE_lua=y
 # CONFIG_PACKAGE_lua-bencode is not set
-# CONFIG_PACKAGE_lua-cjson is not set
 # CONFIG_PACKAGE_lua-copas is not set
 # CONFIG_PACKAGE_lua-coxpcall is not set
 # CONFIG_PACKAGE_lua-examples is not set
@@ -2202,11 +2200,9 @@ CONFIG_PACKAGE_python-xml=y
 # CONFIG_PACKAGE_python3-ctypes is not set
 # CONFIG_PACKAGE_python3-dbm is not set
 # CONFIG_PACKAGE_python3-decimal is not set
-# CONFIG_PACKAGE_python3-dev is not set
 # CONFIG_PACKAGE_python3-distutils is not set
 # CONFIG_PACKAGE_python3-email is not set
 # CONFIG_PACKAGE_python3-gdbm is not set
-# CONFIG_PACKAGE_python3-lib2to3 is not set
 # CONFIG_PACKAGE_python3-light is not set
 # CONFIG_PACKAGE_python3-logging is not set
 # CONFIG_PACKAGE_python3-lzma is not set
@@ -2468,7 +2464,7 @@ CONFIG_PACKAGE_libavahi-dbus-support=y
 CONFIG_PACKAGE_libblkid=y
 CONFIG_PACKAGE_libblobmsg-json=y
 # CONFIG_PACKAGE_libcap is not set
-# CONFIG_PACKAGE_libcares is not set
+CONFIG_PACKAGE_libcares=y
 # CONFIG_PACKAGE_libcharset is not set
 # CONFIG_PACKAGE_libconfig is not set
 CONFIG_PACKAGE_libcurl=y
@@ -2585,7 +2581,7 @@ CONFIG_PACKAGE_liblua=y
 # CONFIG_PACKAGE_libmms is not set
 # CONFIG_PACKAGE_libmnl is not set
 # CONFIG_PACKAGE_libmodbus is not set
-# CONFIG_PACKAGE_libmosquitto is not set
+CONFIG_PACKAGE_libmosquitto=y
 # CONFIG_PACKAGE_libmosquitto-nossl is not set
 # CONFIG_PACKAGE_libmount is not set
 # CONFIG_PACKAGE_libmpdclient is not set
@@ -2752,7 +2748,6 @@ CONFIG_PACKAGE_luci-app-arduino-webpanel=y
 # CONFIG_PACKAGE_luci-app-bird4 is not set
 # CONFIG_PACKAGE_luci-app-bird6 is not set
 # CONFIG_PACKAGE_luci-app-bmx6 is not set
-# CONFIG_PACKAGE_luci-app-bmx7 is not set
 # CONFIG_PACKAGE_luci-app-cjdns is not set
 # CONFIG_PACKAGE_luci-app-commands is not set
 # CONFIG_PACKAGE_luci-app-cshark is not set
@@ -2777,7 +2772,6 @@ CONFIG_PACKAGE_luci-app-firewall=y
 # CONFIG_PACKAGE_luci-app-olsr is not set
 # CONFIG_PACKAGE_luci-app-olsr-services is not set
 # CONFIG_PACKAGE_luci-app-olsr-viz is not set
-# CONFIG_PACKAGE_luci-app-p2pblock is not set
 # CONFIG_PACKAGE_luci-app-p910nd is not set
 # CONFIG_PACKAGE_luci-app-pbx is not set
 # CONFIG_PACKAGE_luci-app-polipo is not set
@@ -2786,7 +2780,6 @@ CONFIG_PACKAGE_luci-app-firewall=y
 # CONFIG_PACKAGE_luci-app-samba is not set
 CONFIG_PACKAGE_luci-app-sensor=y
 # CONFIG_PACKAGE_luci-app-siitwizard is not set
-# CONFIG_PACKAGE_luci-app-splash is not set
 # CONFIG_PACKAGE_luci-app-sqm is not set
 # CONFIG_PACKAGE_luci-app-statistics is not set
 # CONFIG_PACKAGE_luci-app-tinyproxy is not set
@@ -2867,7 +2860,6 @@ CONFIG_PACKAGE_luci-lib-nixio_notls=y
 # CONFIG_PACKAGE_freifunk-p2pblock is not set
 # CONFIG_PACKAGE_freifunk-policyrouting is not set
 # CONFIG_PACKAGE_freifunk-watchdog is not set
-# CONFIG_PACKAGE_luci-mod-freifunk-community is not set
 # CONFIG_PACKAGE_meshwizard is not set
 # CONFIG_PACKAGE_remote-update is not set
 
@@ -3186,7 +3178,6 @@ CONFIG_PACKAGE_avahi-utils=y
 # CONFIG_PACKAGE_mcproxy is not set
 # CONFIG_PACKAGE_mwan3 is not set
 # CONFIG_PACKAGE_olsrd is not set
-# CONFIG_PACKAGE_prince is not set
 # CONFIG_PACKAGE_quagga is not set
 # CONFIG_PACKAGE_relayd is not set
 # CONFIG_PACKAGE_smcroute is not set
@@ -3439,7 +3430,6 @@ CONFIG_PACKAGE_uhttpd-mod-ubus=y
 # CONFIG_PACKAGE_6in4 is not set
 # CONFIG_PACKAGE_6rd is not set
 # CONFIG_PACKAGE_6to4 is not set
-# CONFIG_PACKAGE_adblock is not set
 # CONFIG_PACKAGE_ahcpd is not set
 # CONFIG_PACKAGE_aiccu is not set
 # CONFIG_PACKAGE_alfred is not set
@@ -3546,7 +3536,6 @@ CONFIG_PACKAGE_ppp-mod-pppoe=y
 # CONFIG_PACKAGE_seafile-server is not set
 # CONFIG_PACKAGE_ser2net is not set
 # CONFIG_PACKAGE_smartsnmpd is not set
-# CONFIG_PACKAGE_snmp-mibs is not set
 # CONFIG_PACKAGE_snmp-utils is not set
 # CONFIG_PACKAGE_snmpd is not set
 # CONFIG_PACKAGE_snmpd-static is not set
@@ -3900,8 +3889,7 @@ CONFIG_PACKAGE_rng-tools=y
 # CONFIG_PACKAGE_tmux is not set
 # CONFIG_PACKAGE_tracertools is not set
 CONFIG_PACKAGE_triggerhappy=y
-CONFIG_PACKAGE_uboot-envtools=y
-# CONFIG_UBOOT_ENVTOOLS_UBI is not set
+# CONFIG_PACKAGE_uboot-envtools is not set
 CONFIG_PACKAGE_udpcli=y
 # CONFIG_PACKAGE_ugps is not set
 CONFIG_PACKAGE_usb-modeswitch=y
