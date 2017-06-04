@@ -34,14 +34,6 @@ $OPENWRT_PATH/scripts/feeds update
 sleep 2
 echo " "
 
-echo " "
-echo "replace some packages with local source"
-echo " "
-rm -rf $OPENWRT_PATH/feeds/packages/utils/rng-tools
-rm -rf $OPENWRT_PATH/feeds/packages/net/mosquitto
-cp -r replacement-pkgs/rng-tools $OPENWRT_PATH/feeds/packages/utils/
-cp -r replacement-pkgs/mosquitto $OPENWRT_PATH/feeds/packages/net/
-
 echo "*** Install OpenWrt extra packages"
 sleep 2
 $OPENWRT_PATH/scripts/feeds install -a
