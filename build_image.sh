@@ -10,7 +10,7 @@ APP2=
 IMAGE_SUFFIX=
 
 REPO_PATH=$(pwd)
-VERSION=4.2.0
+VERSION=4.2.3
 OPENWRT_PATH="openwrt"
 
 while getopts 'a:b:p:v:sh' OPTION

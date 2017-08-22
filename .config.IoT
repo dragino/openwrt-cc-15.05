@@ -3864,6 +3864,7 @@ CONFIG_PACKAGE_dragino2=y
 # CONFIG_PACKAGE_file is not set
 # CONFIG_PACKAGE_flashrom is not set
 # CONFIG_PACKAGE_flock is not set
+CONFIG_PACKAGE_fping=y
 # CONFIG_PACKAGE_freecwmp is not set
 # CONFIG_PACKAGE_freenetconfd is not set
 # CONFIG_PACKAGE_freenetconfd-plugin-examples is not set
