@@ -3,7 +3,7 @@
 IoT Mesh & Yun Build for Dragino Devices -- Base on Chaos Calmer 15.05 
 ===============
 This repository is a generic OpenWrt version from Dragino devices such as:
-[MS14](http://www.dragino.com/products/mother-board.html), [HE](http://www.dragino.com/products/linux-module/item/87-he.html) and [Yun Shield](http://www.dragino.com/products/yunshield.html).
+[MS14](http://www.dragino.com/products/mother-board.html), [HE](http://www.dragino.com/products/linux-module/item/87-he.html), [LG01](http://www.dragino.com/products/lora/item/117-lg01-p.html),[OLG01](http://www.dragino.com/products/lora/item/118-olg01.html) and [Yun Shield](http://www.dragino.com/products/yunshield.html).
 
 User manual of this version for IoT Build [IoT Mesh Online Manual](http://wiki.dragino.com/index.php?title=IoT_Mesh_Firmware_User_Manual).
 
