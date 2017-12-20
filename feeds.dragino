@@ -1,5 +1,5 @@
 src-git packages https://github.com/dragino/openwrt-packages;for-15.05
-src-git dragino https://github.com/dragino/dragino-packages.git
+src-git dragino https://github.com/dragino/dragino-packages.git;lg08
 src-git routing https://github.com/dragino/openwrt-routing-packages.git;for-15.05
 src-git telephony https://github.com/dragino/openwrt-telephony-packages.git;for-15.05
 src-git management https://github.com/dragino/openwrt-management-packages.git;for-15.05
