@@ -10,7 +10,7 @@ APP2=
 IMAGE_SUFFIX=
 
 REPO_PATH=$(pwd)
-VERSION=4.3.4
+VERSION=5.0.0
 OPENWRT_PATH="openwrt"
 
 while getopts 'a:b:p:v:sh' OPTION
@@ -56,6 +56,8 @@ BUILD_TIME="`date`"
 ARCH="ar71xx"
 
 file_prefix="openwrt-ar71xx-generic-dragino2"
+
+target_path="bin/targets/ar71xx/generic"
 
 #if [ ! -z $APP ];then
 #    file_prefix=$file_prefix"-"$APP
@@ -119,14 +121,8 @@ sed -i "s/VERSION/$BUILD/g" files/etc/banner
 sed -i "s/TIME/$BUILD_TIME/g" files/etc/banner
 echo ""
 
-echo ""
-echo "***Activate $APP config as default config***"
-echo " Run defconfig"
-echo ""
 
-make defconfig 2>&1> /dev/null
-
-[ -f ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin ] && rm -rf ./bin/$ARCH/??*
+[ -f ./$target_path/$file_prefix-squashfs-sysupgrade.bin ] && rm -rf ./bin/$ARCH/??*
 
 echo ""
 if [ ! -z $SFLAG ];then
@@ -137,7 +133,7 @@ else
 	make -j8 V=99
 fi
 
-if [ ! -f ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin ];then
+if [ ! -f ./$target_path/$file_prefix-squashfs-sysupgrade.bin ];then
 	echo ""
 	echo "Build Fails, run below commands to build the image in single thread and check what is wrong"
 	echo "**************"
@@ -154,14 +150,13 @@ IMAGE_DIR=$REPO_PATH/image/$APP-$APP2-build-v$VERSION-$DATE
 
 echo ""
 echo  "***Move files to ./image/$APP-$APP2-build--v$VERSION--$DATE ***"
-cp ./bin/$ARCH/$file_prefix-kernel.bin     $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-kernel.bin
-cp ./bin/$ARCH/$file_prefix-rootfs-squashfs.bin   $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-rootfs-squashfs.bin
-cp ./bin/$ARCH/$file_prefix-squashfs-sysupgrade.bin $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-squashfs-sysupgrade.bin
+cp ./$target_path/$file_prefix-kernel.bin     $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-kernel.bin
+cp ./$target_path/$file_prefix-rootfs-squashfs.bin   $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-rootfs-squashfs.bin
+cp ./$target_path/$file_prefix-squashfs-sysupgrade.bin $IMAGE_DIR/dragino-$APP-$APP2-v$VERSION-squashfs-sysupgrade.bin
 
 echo ""
 echo "***Update md5sums***"
-cat ./bin/$ARCH/md5sums | grep "dragino2" | awk '{gsub(/'"$file_prefix"'/,"dragino-'"$APP"'-'"$APP2"'-v'"$VERSION"'-")}{print}' >> $IMAGE_DIR/md5sums
-
+cat ./$target_path/sha256sums | grep "dragino2" | awk '{gsub(/'"$file_prefix"'/,"dragino-'"$APP"'-'"$APP2"'-v'"$VERSION"'-")}{print}' >> $IMAGE_DIR/sha256sums 
 
 echo ""
 echo "***Back Up Custom Config to Image DIR***"
