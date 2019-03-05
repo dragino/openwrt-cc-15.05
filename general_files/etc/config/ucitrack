@@ -88,19 +88,3 @@ config gpstrack
 config mqtt
 	option exec '/etc/iot/scripts/polish_mqtt_config'
 
-config secn
-
-config gpstrack
-
-config secn
-
-config gpstrack
-
-config secn
-
-config gpstrack
-
-config secn
-
-config gpstrack
-
